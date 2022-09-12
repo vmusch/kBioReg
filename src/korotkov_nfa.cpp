@@ -267,7 +267,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
   return output;
 }
 
-Path* path(kState* position)
+Path* findPath(kState* position)
 {
   Path* p = new Path;
   p->qPath_ = 0;
@@ -284,7 +284,7 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
   std::vector<std::string> line{};
   std::stack<Path*> stack{};
 
-  Path* p = path(input);
+  Path* p = findPath(input);
   stack.push(p);
 
   while(!stack.empty())
@@ -307,7 +307,7 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
       {
         if(p->position_->outs_[p->qPath_]->marked_ == 0)
         {
-          stack.push(path(p->position_->outs_[p->qPath_]));
+          stack.push(findPath(p->position_->outs_[p->qPath_]));
         }
         p->qPath_++;
       }
