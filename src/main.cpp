@@ -46,11 +46,18 @@ void run_query(seqan3::argument_parser &parser)
     }
     catch (seqan3::argument_parser_error const & ext)
     {
-        seqan3::debug_stream << "[Error git pull] " << ext.what() << "\n";
+        seqan3::debug_stream << "[Error kBioReg Query module " << ext.what() << "\n";
         return;
     }
-    seqan3::debug_stream << "Querying" << std::endl;
+    seqan3::debug_stream << "Reading Index from Disk... ";
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{seqan3::bin_count{11},
+                                                                            seqan3::bin_size{8192},
+                                                                            seqan3::hash_function_count{2}};
+    load_ibf(ibf, cmd_args.idx);
+    seqan3::debug_stream << "DONE" << std::endl;
 
+    // Evaluate and search for Regular Expression
+    seqan3::debug_stream << "Querying" << std::endl;
     int qlength = cmd_args.k;
     std::string query = cmd_args.query;
     std::vector<char> a = getAlphabet(query);
@@ -63,11 +70,11 @@ void run_query(seqan3::argument_parser &parser)
         dfs(i,matrix);
     }
     uMatrix(matrix);
-    for(auto e : a)
-    {
-        std::cout<<e<<" ";
-    }
-    std::cout<<"\n";
+//    for(auto e : a)
+//    {
+//        std::cout<<e<<" ";
+//    }
+//    std::cout<<"\n";
     for(auto i : matrix)
     {
         for(auto j : i)
