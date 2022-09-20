@@ -1,10 +1,5 @@
-#include <algorithm>
-#include <iostream>
-#include <math.h>
-#include <fstream>
-#include <string>
-#include <stack>
-#include <vector>
+#include "utils.h"
+
 
 std::vector<char> getAlphabet(const std::string& regex)
 {

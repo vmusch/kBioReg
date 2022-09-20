@@ -1,8 +1,27 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <iostream>
+#include <math.h>
+#include <fstream>
+#include <string>
+#include <stack>
+#include <vector>
+#include <filesystem>
+
+#include <seqan3/core/debug_stream.hpp>
+#include <seqan3/alphabet/nucleotide/all.hpp>
+#include <seqan3/io/sequence_file/all.hpp>
+
+
+// Types
+using record_pair = typename std::pair<std::string, seqan3::dna5_vector>;
+using record_list = typename std::vector<record_pair>;
+
 
 std::vector<char> getAlphabet(const std::string& regex);
 

@@ -1,15 +1,9 @@
-#include <iostream>
-#include <vector>
-#include <set>
-#include <string>
-#include <stack>
+#include "utils.h"
+#include "arg_parse.h"
+#include "index.h"
 #include "korotkov_nfa.h"
 #include "graphMaker.h"
 #include "nfa_pointer.h"
-#include "utils.h"
-#include "arg_parse.h"
-#include <seqan3/core/debug_stream.hpp>
-#include <seqan3/search/dream_index/interleaved_bloom_filter.hpp>
 
 
 void run_index(seqan3::argument_parser &parser)
@@ -22,21 +16,23 @@ void run_index(seqan3::argument_parser &parser)
     }
     catch (seqan3::argument_parser_error const & ext)
     {
-        seqan3::debug_stream << "[Error git pull] " << ext.what() << "\n";
+        seqan3::debug_stream << "[Indexing Parser Error] " << ext.what() << "\n";
         return;
     }
-    seqan3::debug_stream << "Indexing" << std::endl;
+    record_list records;
+    std::filesystem::path acid_lib = cmd_args.acid_lib;
+    uint8_t bin_count = parse_reference(acid_lib, records);
+    // Create IBF with one BF for each contig in library
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{seqan3::bin_count{bin_count},
+                                         seqan3::bin_size{cmd_args.bin_size},
+                                         seqan3::hash_function_count{cmd_args.hash_count}};
+    seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
+    create_index(ibf, records, bin_count, cmd_args.k);
+    seqan3::debug_stream << "DONE" << std::endl;
 
-    seqan3::interleaved_bloom_filter ibf{seqan3::bin_count{12u}, seqan3::bin_size{8192u}};
-    ibf.emplace(126, seqan3::bin_index{0u});
-    ibf.emplace(712, seqan3::bin_index{3u});
-    ibf.emplace(237, seqan3::bin_index{9u});
-
-
-    //Capture the result by reference to avoid copies.
-    auto agent = ibf.membership_agent();
-    auto & result = agent.bulk_contains(712);
-    seqan3::debug_stream << result << '\n'; // prints [0,0,0,1,0,0,0,0,0,0,0,0]
+    seqan3::debug_stream << "Writing to disk... ";
+    store_ibf(ibf, "index.ibf");
+    seqan3::debug_stream << "DONE" << std::endl;
 }
 
 
@@ -158,48 +154,3 @@ int main(int argc, char *argv[])
 //    }
   return 0;
 }
-
-
-
-
-
-
-//   std::string regex;
-//   int qlength = 0;
-//   std::cout<<"Enter Regex in RPN:"<<"\n";
-//   std::cin>>regex;
-//   std::cout<<"Enter qGram length:"<<"\n";
-//   std::cin>>qlength;
-//   State* nfa = post2nfaE(regex);
-
-//   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-
-//   std::vector<char> a = getAlphabet(regex);
-//   for(auto e : a)
-//   {
-//     std::cout<<e<<" ";
-//   }
-
-//   std::cout<<"\n";
-//   std::vector<std::vector<std::string>> matrix{};
-
-//   for(auto i : knfa)
-//   {
-//     dfs(i,matrix);
-//   }
-//   uMatrix(matrix);
-//   for(auto i : matrix)
-//   {
-//     for(auto j : i)
-//     {
-//       std::cout<<j<<" ";
-//     }
-//     std::cout<<"\n";
-//   }
-//   std::string h = "out";
-//   matrixTotxt(matrix, h);
-//   printGraph(knfa,"out.dot");
-//   return 0;
-//   //at.g.    at| gc| |    at| gc| | |    at| gc| |   |.  ta.g.tg.a.|ta.a.|.
-// }
-// at.g.at|gc||at|gc|||at|gc|||*.ta.g.tg.a.|ta.a.|.
