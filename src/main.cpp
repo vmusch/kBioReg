@@ -58,7 +58,7 @@ void run_query(seqan3::argument_parser &parser)
 
     // Evaluate and search for Regular Expression
     seqan3::debug_stream << "Querying" << std::endl;
-    int qlength = cmd_args.k;
+    uint8_t qlength = cmd_args.k;
     std::string query = cmd_args.query;
     std::vector<char> a = getAlphabet(query);
     State* nfa = post2nfaE(query);
@@ -69,20 +69,22 @@ void run_query(seqan3::argument_parser &parser)
     {
         dfs(i,matrix);
     }
+
     uMatrix(matrix);
-//    for(auto e : a)
-//    {
-//        std::cout<<e<<" ";
-//    }
-//    std::cout<<"\n";
+
+    auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{qlength});
+    std::vector<std::vector<std::string>> paths_vector;
     for(auto i : matrix)
     {
+        std::vector<std::string> hash_vector;
         for(auto j : i)
         {
-            std::cout<<j<<" ";
+            hash_vector.push_back(j);
         }
-        std::cout<<"\n";
+        paths_vector.push_back(hash_vector);
     }
+    for (auto && path : paths_vector)
+        seqan3::debug_stream << path << std::endl;
 }
 
 
