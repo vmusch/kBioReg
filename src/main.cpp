@@ -38,6 +38,7 @@ void run_index(seqan3::argument_parser &parser)
 
 void run_query(seqan3::argument_parser &parser)
 {
+    // Parse Arguments
     query_arguments cmd_args{};
     initialise_query_parser(parser, cmd_args);
     try
@@ -49,29 +50,42 @@ void run_query(seqan3::argument_parser &parser)
         seqan3::debug_stream << "[Error kBioReg Query module " << ext.what() << "\n";
         return;
     }
+
+    // Load index from disk
     seqan3::debug_stream << "Reading Index from Disk... ";
-    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{seqan3::bin_count{11},
-                                                                            seqan3::bin_size{8192},
-                                                                            seqan3::hash_function_count{2}};
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{};
     load_ibf(ibf, cmd_args.idx);
     seqan3::debug_stream << "DONE" << std::endl;
 
     // Evaluate and search for Regular Expression
-    seqan3::debug_stream << "Querying" << std::endl;
+    seqan3::debug_stream << "Querying:" << std::endl;
     uint8_t qlength = cmd_args.k;
     std::string query = cmd_args.query;
     std::vector<char> a = getAlphabet(query);
+
+    // Postfix to Thompson NFA
+    seqan3::debug_stream << "   - Constructing Thompson NFA from RegEx... ";
     State* nfa = post2nfaE(query);
+    seqan3::debug_stream << "DONE" << std::endl;
+
+    // Thompson NFA to Korotkov NFA
+    seqan3::debug_stream << "   - Construction kNFA from Thompson NFA... ";
     std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-    deleteGraph(nfa);
+    seqan3::debug_stream << "DONE" << std::endl;
+    //deleteGraph(nfa);
+
+    // Create kmer path matrix from kNFA
+    seqan3::debug_stream << "   - Computing kmer path matrix from kNFA... ";
     std::vector<std::vector<std::string>> matrix{};
     for(auto i : knfa)
     {
         dfs(i,matrix);
     }
-
     uMatrix(matrix);
+    seqan3::debug_stream << "DONE" << std::endl;
 
+    // Search kmer paths in index
+    seqan3::debug_stream << "   - Search kmers in index... ";
     auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{qlength});
     std::vector<std::vector<std::string>> paths_vector;
     for(auto i : matrix)
@@ -85,6 +99,7 @@ void run_query(seqan3::argument_parser &parser)
     }
     for (auto && path : paths_vector)
         seqan3::debug_stream << path << std::endl;
+    seqan3::debug_stream << "DONE" << std::endl;
 }
 
 
