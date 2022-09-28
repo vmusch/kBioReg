@@ -16,6 +16,8 @@
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/alphabet/nucleotide/all.hpp>
 #include <seqan3/io/sequence_file/all.hpp>
+#include <seqan3/search/views/kmer_hash.hpp>
+#include <seqan3/search/views/minimiser_hash.hpp>
 #include <seqan3/search/dream_index/interleaved_bloom_filter.hpp>
 
 

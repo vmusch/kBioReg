@@ -4,6 +4,7 @@
 #include "korotkov_nfa.h"
 #include "graphMaker.h"
 #include "nfa_pointer.h"
+#include "query.h"
 
 
 void run_index(seqan3::argument_parser &parser)
@@ -86,19 +87,27 @@ void run_query(seqan3::argument_parser &parser)
 
     // Search kmer paths in index
     seqan3::debug_stream << "   - Search kmers in index... ";
+    seqan3::debug_stream << std::endl;
+
+    // A vector to store kNFA paths as hashed constituent kmers eg one element would be. <78, 45, 83...> <--> AC, CG, GT
     auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{qlength});
-    std::vector<std::vector<std::string>> paths_vector;
+    std::vector<std::vector<std::pair<std::string, uint64_t>>> paths_vector;
     for(auto i : matrix)
     {
-        std::vector<std::string> hash_vector;
+        std::vector<std::pair<std::string, uint64_t>> hash_vector;
         for(auto j : i)
         {
-            hash_vector.push_back(j);
+            auto digest = j | hash_adaptor;
+            // Create a vector of kmer hashes that correspond
+            hash_vector.push_back(std::make_pair(j, digest[0]));
         }
         paths_vector.push_back(hash_vector);
     }
-    for (auto && path : paths_vector)
-        seqan3::debug_stream << path << std::endl;
+    for (auto path : paths_vector)
+    {
+        seqan3::debug_stream << collapse_kmers(qlength, path) << ":::";
+        query_ibf(ibf, path);
+    }
     seqan3::debug_stream << "DONE" << std::endl;
 }
 
