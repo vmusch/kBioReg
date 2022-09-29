@@ -20,7 +20,7 @@ A matrix is generated from the automata, which can be used for pattern matching.
 ## Usage
 ```bash
 ## Index
-kbioreg index -k 5 ../data/ibf_example.fna
+kbioreg index -k 3 ../data/ibf_example.fna
 ## Query RegEx
-kbioreg query -k 5 index.ibf "AC+G+|.T."
+kbioreg query -k 3 index.ibf "AC+G+|.T."
 ```
