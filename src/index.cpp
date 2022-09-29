@@ -24,5 +24,8 @@ void create_index(seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompre
     auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{k});
     for (uint8_t i = 0; i < bin_count; i++)
         for (auto && value : refs[i].second | hash_adaptor)
+        {
+            seqan3::debug_stream << value << std::endl;
             ibf.emplace(value, seqan3::bin_index{i});
+        }
 }

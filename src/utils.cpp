@@ -36,6 +36,15 @@ void matrixTotxt(const std::vector<std::vector<std::string>>& matrix, std::strin
   }
 }
 
+std::vector<seqan3::dna5> convertStringToDNA(std::string const &str)
+{
+    std::vector<seqan3::dna5> kmer_dna5;
+    for (auto s : str) {
+        kmer_dna5.emplace_back(seqan3::assign_char_to(s, seqan3::dna5{}));
+    }
+    return kmer_dna5;
+}
+
 // bool isFunction(const char& a)
 // {
 //       switch(a){

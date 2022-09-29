@@ -28,6 +28,8 @@ using record_list = typename std::vector<record_pair>;
 
 std::vector<char> getAlphabet(const std::string& regex);
 
+std::vector<seqan3::dna5> convertStringToDNA(std::string const &str);
+
 //soll alle nötigen qgramme finden
 std::vector<std::string> getQgramAlphabet(const std::vector<std::vector<std::string>>& matrix);
 

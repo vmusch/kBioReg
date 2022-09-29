@@ -25,7 +25,7 @@ std::string
 collapse_kmers(uint8_t const &k, std::vector<std::pair<std::string, uint64_t>> const &kvec)
 {
     std::string assembly = kvec[0].first;
-    for (int i = 1; i < kvec.size(); i++)
+    for (uint16_t i = 1; i < kvec.size(); i++)
         assembly += kvec[i].first.substr(k-1, 1);
     return assembly;
 }

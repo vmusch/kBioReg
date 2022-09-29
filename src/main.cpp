@@ -97,7 +97,8 @@ void run_query(seqan3::argument_parser &parser)
         std::vector<std::pair<std::string, uint64_t>> hash_vector;
         for(auto j : i)
         {
-            auto digest = j | hash_adaptor;
+            std::vector<seqan3::dna5> acid_vec = convertStringToDNA(j);
+            auto digest = acid_vec | hash_adaptor;
             // Create a vector of kmer hashes that correspond
             hash_vector.push_back(std::make_pair(j, digest[0]));
         }
