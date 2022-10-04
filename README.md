@@ -1,5 +1,5 @@
 # Evaluation of Biological, RegEx with Korotkov NFA
-This app constructs a Korotkov Automata from an input Regular Expression. A Korotkov Automata is an NFA with Q-gram/K-mer transitions. It is based on this [lecture] (https://wiki.postgresql.org/images/6/6c/Index_support_for_regular_expression_search.pdf)
+This app constructs a Korotkov Automata from an input Regular Expression. A Korotkov Automata is an NFA with Q-gram/K-mer transitions. It is based on this [lecture](https://wiki.postgresql.org/images/6/6c/Index_support_for_regular_expression_search.pdf)
 
 A matrix is generated from the automata, which can be used for pattern matching. The regex need to be written in reverse polish notation and supports the following operations:
 
@@ -20,7 +20,7 @@ A matrix is generated from the automata, which can be used for pattern matching.
 ## Usage
 ```bash
 ## Index
-kbioreg index -k 5 ../data/ibf_example.fna
+kbioreg index -k 3 ../data/ibf_example.fna
 ## Query RegEx
-kbioreg query -k 5 index.ibf "AC+G+|.T."
+kbioreg query -k 3 index.ibf "AC+G+|.T."
 ```
