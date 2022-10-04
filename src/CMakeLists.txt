@@ -13,3 +13,6 @@ target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC "${PROJECT_NAME}_interface")
 
 add_executable ("${PROJECT_NAME}" main.cpp)
 target_link_libraries ("${PROJECT_NAME}" PRIVATE "${PROJECT_NAME}_lib")
+
+set(BENCH benchmark_main.cpp nfa_pointer.cpp)
+add_executable(benchmark ${PROJECT_SOURCE_DIR}/src/${BENCH})
