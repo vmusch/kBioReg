@@ -38,7 +38,7 @@ Path* findPath(kState* position);
 
 void oneStep(std::stack<keyState *>& stack, State* it_ptr, kState* kptr, std::string& qGram);
 
-void firstPhase(State *it_ptr, std::vector<keyState *>& output, const uint8_t &q);
+void firstPhase(State *it_ptr, std::vector<keyState *>& output, const size_t &q);
 
 int linSearch(const std::vector<keyState *>& liste, keyState* obj);
 
