@@ -33,7 +33,7 @@ keyState* key(const std::string& qGramFrag, State *positionNFA, kState * home)
 }
 
 /*
- * Helpfunction of firstPhas
+ * Helpfunction of firstPhase
  * represents one Step in the Automaton 
  */
 
@@ -66,7 +66,7 @@ void oneStep(std::stack<keyState *>& stack, State* itptr, kState* kptr, std::str
  * Throws an error, if the q-gram length longer than the shortest possible q-gram
  */
 
-void firstPhase(State* it_ptr, std::vector<keyState *>& output, const int& q)
+void firstPhase(State* it_ptr, std::vector<keyState *>& output, const uint8_t &q)
 {
   std::stack<keyState *> stack;
   keyState* k;
@@ -104,7 +104,7 @@ void firstPhase(State* it_ptr, std::vector<keyState *>& output, const int& q)
 
 int linSearchK(const std::vector<kState *>& liste, std::string obj)
 {
-  for(int i = 0; i<liste.size(); i++)
+  for(uint16_t i = 0; i<liste.size(); i++)
   {
     if(liste[i]->qGram_ == obj)
     {
@@ -116,7 +116,7 @@ int linSearchK(const std::vector<kState *>& liste, std::string obj)
 
 int linSearch(const std::vector<keyState *>& liste, keyState* obj)
 {
-  for(int i = 0; i<liste.size(); i++)
+  for(uint16_t i = 0; i<liste.size(); i++)
   {
     if(liste[i]->qGramFrag_ == obj->qGramFrag_ && liste[i]-> positionNFA_ == obj->positionNFA_)
     {
@@ -236,7 +236,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
   std::string edge;
   output.reserve(queue.size());
 
-  for(int i = 0; i < queue.size(); i++)
+  for(uint16_t i = 0; i < queue.size(); i++)
   {
     edge = queue[i]->qGramFrag_;
     edge += queue[i]->positionNFA_->c_;
@@ -255,7 +255,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
   }
 
   //neue keys erstellen und in queue eintragen, sowie kstate erstellen und verknüpfen
-  for(int i = 0; i < queue.size(); i++)
+  for(uint16_t i = 0; i < queue.size(); i++)
   {
     nextKeys(queue, queue[i], match);
   }
