@@ -1,15 +1,10 @@
-#include <iostream>
-#include <vector>
-#include <set>
-#include <string>
-#include <stack>
+#include "utils.h"
+#include "arg_parse.h"
+#include "index.h"
 #include "korotkov_nfa.h"
 #include "graphMaker.h"
 #include "nfa_pointer.h"
-#include "utils.h"
-#include "arg_parse.h"
-#include <seqan3/core/debug_stream.hpp>
-#include <seqan3/search/dream_index/interleaved_bloom_filter.hpp>
+#include "query.h"
 
 
 void run_index(seqan3::argument_parser &parser)
@@ -22,26 +17,29 @@ void run_index(seqan3::argument_parser &parser)
     }
     catch (seqan3::argument_parser_error const & ext)
     {
-        seqan3::debug_stream << "[Error git pull] " << ext.what() << "\n";
+        seqan3::debug_stream << "[Indexing Parser Error] " << ext.what() << "\n";
         return;
     }
-    seqan3::debug_stream << "Indexing" << std::endl;
+    record_list records;
+    std::filesystem::path acid_lib = cmd_args.acid_lib;
+    uint8_t bin_count = parse_reference(acid_lib, records);
+    // Create IBF with one BF for each contig in library
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{seqan3::bin_count{bin_count},
+                                         seqan3::bin_size{cmd_args.bin_size},
+                                         seqan3::hash_function_count{cmd_args.hash_count}};
+    seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
+    create_index(ibf, records, bin_count, cmd_args.k);
+    seqan3::debug_stream << "DONE" << std::endl;
 
-    seqan3::interleaved_bloom_filter ibf{seqan3::bin_count{12u}, seqan3::bin_size{8192u}};
-    ibf.emplace(126, seqan3::bin_index{0u});
-    ibf.emplace(712, seqan3::bin_index{3u});
-    ibf.emplace(237, seqan3::bin_index{9u});
-
-
-    //Capture the result by reference to avoid copies.
-    auto agent = ibf.membership_agent();
-    auto & result = agent.bulk_contains(712);
-    seqan3::debug_stream << result << '\n'; // prints [0,0,0,1,0,0,0,0,0,0,0,0]
+    seqan3::debug_stream << "Writing to disk... ";
+    store_ibf(ibf, "index.ibf");
+    seqan3::debug_stream << "DONE" << std::endl;
 }
 
 
 void run_query(seqan3::argument_parser &parser)
 {
+    // Parse Arguments
     query_arguments cmd_args{};
     initialise_query_parser(parser, cmd_args);
     try
@@ -50,36 +48,68 @@ void run_query(seqan3::argument_parser &parser)
     }
     catch (seqan3::argument_parser_error const & ext)
     {
-        seqan3::debug_stream << "[Error git pull] " << ext.what() << "\n";
+        seqan3::debug_stream << "[Error kBioReg Query module " << ext.what() << "\n";
         return;
     }
-    seqan3::debug_stream << "Querying" << std::endl;
 
-    int qlength = cmd_args.k;
+    // Load index from disk
+    seqan3::debug_stream << "Reading Index from Disk... ";
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{};
+    load_ibf(ibf, cmd_args.idx);
+    seqan3::debug_stream << "DONE" << std::endl;
+
+    // Evaluate and search for Regular Expression
+    seqan3::debug_stream << "Querying:" << std::endl;
+    uint8_t qlength = cmd_args.k;
     std::string query = cmd_args.query;
     std::vector<char> a = getAlphabet(query);
+
+    // Postfix to Thompson NFA
+    seqan3::debug_stream << "   - Constructing Thompson NFA from RegEx... ";
     State* nfa = post2nfaE(query);
+    seqan3::debug_stream << "DONE" << std::endl;
+
+    // Thompson NFA to Korotkov NFA
+    seqan3::debug_stream << "   - Construction kNFA from Thompson NFA... ";
     std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-    deleteGraph(nfa);
+    seqan3::debug_stream << "DONE" << std::endl;
+    //deleteGraph(nfa);
+
+    // Create kmer path matrix from kNFA
+    seqan3::debug_stream << "   - Computing kmer path matrix from kNFA... ";
     std::vector<std::vector<std::string>> matrix{};
     for(auto i : knfa)
     {
         dfs(i,matrix);
     }
     uMatrix(matrix);
-    for(auto e : a)
-    {
-        std::cout<<e<<" ";
-    }
-    std::cout<<"\n";
+    seqan3::debug_stream << "DONE" << std::endl;
+
+    // Search kmer paths in index
+    seqan3::debug_stream << "   - Search kmers in index... ";
+    seqan3::debug_stream << std::endl;
+
+    // A vector to store kNFA paths as hashed constituent kmers eg one element would be. <78, 45, 83...> <--> AC, CG, GT
+    auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{qlength});
+    std::vector<std::vector<std::pair<std::string, uint64_t>>> paths_vector;
     for(auto i : matrix)
     {
+        std::vector<std::pair<std::string, uint64_t>> hash_vector;
         for(auto j : i)
         {
-            std::cout<<j<<" ";
+            std::vector<seqan3::dna5> acid_vec = convertStringToDNA(j);
+            auto digest = acid_vec | hash_adaptor;
+            // Create a vector of kmer hashes that correspond
+            hash_vector.push_back(std::make_pair(j, digest[0]));
         }
-        std::cout<<"\n";
+        paths_vector.push_back(hash_vector);
     }
+    for (auto path : paths_vector)
+    {
+        seqan3::debug_stream << collapse_kmers(qlength, path) << ":::";
+        query_ibf(ibf, path);
+    }
+    seqan3::debug_stream << "DONE" << std::endl;
 }
 
 
@@ -158,48 +188,3 @@ int main(int argc, char *argv[])
 //    }
   return 0;
 }
-
-
-
-
-
-
-//   std::string regex;
-//   int qlength = 0;
-//   std::cout<<"Enter Regex in RPN:"<<"\n";
-//   std::cin>>regex;
-//   std::cout<<"Enter qGram length:"<<"\n";
-//   std::cin>>qlength;
-//   State* nfa = post2nfaE(regex);
-
-//   std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-
-//   std::vector<char> a = getAlphabet(regex);
-//   for(auto e : a)
-//   {
-//     std::cout<<e<<" ";
-//   }
-
-//   std::cout<<"\n";
-//   std::vector<std::vector<std::string>> matrix{};
-
-//   for(auto i : knfa)
-//   {
-//     dfs(i,matrix);
-//   }
-//   uMatrix(matrix);
-//   for(auto i : matrix)
-//   {
-//     for(auto j : i)
-//     {
-//       std::cout<<j<<" ";
-//     }
-//     std::cout<<"\n";
-//   }
-//   std::string h = "out";
-//   matrixTotxt(matrix, h);
-//   printGraph(knfa,"out.dot");
-//   return 0;
-//   //at.g.    at| gc| |    at| gc| | |    at| gc| |   |.  ta.g.tg.a.|ta.a.|.
-// }
-// at.g.at|gc||at|gc|||at|gc|||*.ta.g.tg.a.|ta.a.|.
