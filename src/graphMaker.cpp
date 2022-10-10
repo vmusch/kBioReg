@@ -23,7 +23,7 @@ void print(const std::vector<kState *>& input)
 {
   std::stack<kState *> stack;
   std::cout<<"Start: "<<"\n";
-  for(int i = 0; i < input.size(); i++)
+  for(size_t i = 0; i < input.size(); i++)
   {
     std::cout<<input[i]<<"\n";
     stack.push(input[i]);
@@ -91,7 +91,7 @@ void printGraph(const std::vector<kState *>& input, const std::string& filename)
 
   std::string newline;
   std::stack<kState *> stack;
-  for(int i = 0; i < input.size(); i++)
+  for(size_t i = 0; i < input.size(); i++)
   {
     stack.push(input[i]);
   }
@@ -117,7 +117,7 @@ void printGraph(const std::vector<kState *>& input, const std::string& filename)
 
 void uMatrix(std::vector<std::vector<std::string>>& matrix)
 {
-  for(int i = 0; i < matrix.size(); ++i)
+  for(size_t i = 0; i < matrix.size(); ++i)
   {
     std::sort(matrix[i].begin(), matrix[i].end());
     auto last = std::unique(matrix[i].begin(), matrix[i].end());
