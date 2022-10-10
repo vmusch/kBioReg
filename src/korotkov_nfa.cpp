@@ -255,6 +255,7 @@ std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q)
   }
 
   //neue keys erstellen und in queue eintragen, sowie kstate erstellen und verknüpfen
+
   for(size_t i = 0; i < queue.size(); i++)
   {
     nextKeys(queue, queue[i], match);
