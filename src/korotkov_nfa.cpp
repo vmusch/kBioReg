@@ -33,7 +33,7 @@ keyState* key(const std::string& qGramFrag, State *positionNFA, kState * home)
 }
 
 /*
- * Helpfunction of firstPhas
+ * Helpfunction of firstPhase
  * represents one Step in the Automaton 
  */
 
