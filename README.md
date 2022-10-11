@@ -26,3 +26,6 @@ kbioreg index -k 3 ../data/ibf_example.fna
 ## Query RegEx
 kbioreg query -k 3 index.ibf "AC+G+|.T."
 ```
+
+## Notes
+This app was generated from the [SeqAn App Template](https://github.com/seqan/app-template) and makes heavy use of the [SeqAn library](https://github.com/seqan/seqan3/tree/4668203ee1526b4ac3dbdc47869bee72253f684c).
