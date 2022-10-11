@@ -12,10 +12,10 @@ A matrix is generated from the automata, which can be used for pattern matching.
 
 ## Installation
 
-1. Clone the repository with ``git clone --recurse-submodules git@github.com:remyschwab/kBioReg.git``
-2. Descend into the home directory and input: ``mkdir build && cd build``
-3. Configure with cmake ``cmake ..``
-4. Build with make ``make``
+1. Clone the repository with ```git clone --recurse-submodules git@github.com:remyschwab/kBioReg.git```
+2. Descend into the home directory and input: ```mkdir build && cd build```
+3. Configure with cmake ```cmake -DCMAKE_CXX_COMPILER=/path/to/g++-11 ..```
+4. Build with make ```make```
 
 ## Usage
 ```bash
