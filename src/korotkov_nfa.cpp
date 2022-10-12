@@ -66,7 +66,7 @@ void oneStep(std::stack<keyState *>& stack, State* itptr, kState* kptr, std::str
  * Throws an error, if the q-gram length longer than the shortest possible q-gram
  */
 
-void firstPhase(State* it_ptr, std::vector<keyState *>& output, const size_t &q)
+void firstPhase(State* it_ptr, std::vector<keyState *>& output, const size_t& q)
 {
   std::stack<keyState *> stack;
   keyState* k;

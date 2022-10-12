@@ -12,10 +12,12 @@ A matrix is generated from the automata, which can be used for pattern matching.
 
 ## Installation
 
-1. Clone the repository with ``git clone --recurse-submodules git@github.com:remyschwab/kBioReg.git``
-2. Descend into the home directory and input: ``mkdir build && cd build``
-3. Configure with cmake ``cmake ..``
-4. Build with make ``make``
+1. Clone the repository with
+```git clone --recurse-submodules git@github.com:remyschwab/kBioReg.git```
+2. Descend into the home directory and input:
+```mkdir build && cd build```
+3. Configure with cmake ```cmake -DCMAKE_CXX_COMPILER=/path/to/g++-11 ..```
+4. Build with make ```make```
 
 ## Usage
 ```bash
@@ -24,3 +26,6 @@ kbioreg index -k 3 ../data/ibf_example.fna
 ## Query RegEx
 kbioreg query -k 3 index.ibf "AC+G+|.T."
 ```
+
+## Notes
+This app was generated from the [SeqAn App Template](https://github.com/seqan/app-template) and makes heavy use of the [SeqAn library](https://github.com/seqan/seqan3/tree/4668203ee1526b4ac3dbdc47869bee72253f684c).

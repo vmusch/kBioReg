@@ -9,7 +9,7 @@ void
 query_ibf(seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> &ibf,
           std::vector<std::pair<std::string, uint64_t>> &path)
 {
-    seqan3::debug_stream << path << std::endl;
+    seqan3::debug_stream << path << ":::";
     auto agent = ibf.membership_agent();
     std::vector<uint32_t> counter;
     counter.assign(ibf.bin_count(), 0);
@@ -18,7 +18,6 @@ query_ibf(seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> &i
                         agent.bulk_contains(kmer.second).begin(),
                         counter.begin(), std::plus<int>());
     seqan3::debug_stream << counter << std::endl;
-    seqan3::debug_stream << std::endl;
 }
 
 

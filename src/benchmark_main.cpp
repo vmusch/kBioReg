@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[])
 {
-    int set = std::stoi(argv[2]);
+    size_t set = std::stoi(argv[2]);
     std::cout<<set<<"\n";
     std::string regex = argv[1];
     State* nfa = post2nfaE(regex);
@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     {
         std::string word = getRandomWord(nfa);
         file << word;
-        for(int i = word.size(); i < 80; i++)
+        for(size_t i = word.size(); i < 80; i++)
         {
             file << 'A';
         }
