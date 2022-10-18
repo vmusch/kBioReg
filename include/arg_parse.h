@@ -13,6 +13,7 @@ struct index_arguments
 {
     uint8_t k = 3;
     uint8_t t = 1;
+    std::string ofile;
     std::filesystem::path acid_lib{};
     uint32_t bin_size = 8192;
     uint8_t hash_count = 2;
@@ -32,6 +33,7 @@ inline void initialise_index_parser(seqan3::argument_parser &parser, index_argum
     parser.info.version = "1.0.0";
     parser.add_option(args.k, 'k', "ksize", "size of kmers");
     parser.add_option(args.t, 't', "threads", "Number of threads");
+    parser.add_option(args.ofile, 'o', "ofile", "Name of index on disk");
     parser.add_positional_option(args.acid_lib, "Nucleic or Amino Acid library to indexed",
                                  seqan3::input_file_validator{{"fq","fastq","fa","fasta", "fna"}});
 }

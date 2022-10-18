@@ -24,15 +24,16 @@ void run_index(seqan3::argument_parser &parser)
     std::filesystem::path acid_lib = cmd_args.acid_lib;
     uint8_t bin_count = parse_reference(acid_lib, records);
     // Create IBF with one BF for each contig in library
-    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{seqan3::bin_count{bin_count},
-                                         seqan3::bin_size{cmd_args.bin_size},
-                                         seqan3::hash_function_count{cmd_args.hash_count}};
+//    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{seqan3::bin_count{bin_count},
+//                                         seqan3::bin_size{cmd_args.bin_size},
+//                                         seqan3::hash_function_count{cmd_args.hash_count}};
     seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
-    create_index(ibf, records, bin_count, cmd_args.k);
+    IndexStructure ibf = create_index(records, bin_count, cmd_args);
     seqan3::debug_stream << "DONE" << std::endl;
 
     seqan3::debug_stream << "Writing to disk... ";
-    store_ibf(ibf, "index.ibf");
+    std::filesystem::path output_path{cmd_args.ofile+".ibf"};
+    store_ibf(ibf, output_path);
     seqan3::debug_stream << "DONE" << std::endl;
 }
 
