@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "../include/nfa_pointer.h"
+#include "nfa_pointer.h"
 
 int main(int argc, char *argv[])
 {
