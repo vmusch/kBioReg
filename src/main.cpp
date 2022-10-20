@@ -24,9 +24,6 @@ void run_index(seqan3::argument_parser &parser)
     std::filesystem::path acid_lib = cmd_args.acid_lib;
     uint8_t bin_count = parse_reference(acid_lib, records);
     // Create IBF with one BF for each contig in library
-//    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{seqan3::bin_count{bin_count},
-//                                         seqan3::bin_size{cmd_args.bin_size},
-//                                         seqan3::hash_function_count{cmd_args.hash_count}};
     seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
     IndexStructure ibf = create_index(records, bin_count, cmd_args);
     seqan3::debug_stream << "DONE" << std::endl;
@@ -55,13 +52,14 @@ void run_query(seqan3::argument_parser &parser)
 
     // Load index from disk
     seqan3::debug_stream << "Reading Index from Disk... ";
-    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf{};
+    IndexStructure ibf;
     load_ibf(ibf, cmd_args.idx);
+    // seqan3::debug_stream << typeid(ibf).name() << std::endl;
     seqan3::debug_stream << "DONE" << std::endl;
 
     // Evaluate and search for Regular Expression
     seqan3::debug_stream << "Querying:" << std::endl;
-    uint8_t qlength = cmd_args.k;
+    uint8_t qlength = ibf.k_;
     std::string query = cmd_args.query;
     std::vector<char> a = getAlphabet(query);
 
@@ -137,55 +135,5 @@ int main(int argc, char *argv[])
         run_query(sub_parser);
     else
         std::cout << "Unhandled subparser named " << sub_parser.info.app_name << '\n';
-
-    // Return error for bad invocation
-//    if(argc > 5 || argc < 3)
-//    {
-//    std::cerr<<"error";
-//    return -1;
-//    }
-//
-//    int qlength = std::stoi(argv[2]);
-//    std::vector<char> a = getAlphabet(argv[1]);
-//
-//    State* nfa = post2nfaE(argv[1]);
-//    std::vector<kState *> knfa = nfa2knfa(nfa, qlength);
-//
-//    deleteGraph(nfa);
-//
-//    std::vector<std::vector<std::string>> matrix{};
-//    for(auto i : knfa)
-//    {
-//      dfs(i,matrix);
-//    }
-//    uMatrix(matrix);
-//    if(argc >= 4)
-//    {
-//      std::string matrixfile = argv[3];
-//      matrixTotxt(matrix, matrixfile);
-//    }
-//    else
-//    {
-//      std::vector<char> a = getAlphabet(argv[1]);
-//      for(auto e : a)
-//      {
-//        std::cout<<e<<" ";
-//      }
-//      std::cout<<"\n";
-//      for(auto i : matrix)
-//      {
-//        for(auto j : i)
-//        {
-//          std::cout<<j<<" ";
-//        }
-//        std::cout<<"\n";
-//      }
-//    }
-//    if(argc == 5)
-//    {
-//      std::string dotfile = argv[4];
-//      dotfile += ".dot";
-//      printGraph(knfa, dotfile);
-//    }
   return 0;
 }

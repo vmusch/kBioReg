@@ -25,7 +25,6 @@ namespace index_structure
 
 } // namespace index_structure
 
-template <typename data_t = index_structure::ibf>
 class IndexStructure
 {
 
@@ -33,13 +32,11 @@ private:
     uint8_t bin_count_;
     uint32_t bin_size_{};
     uint8_t hash_count_{};
-
     seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf_;
 
 public:
-    static constexpr seqan3::data_layout data_layout_mode = data_t::data_layout_mode;
 
-    uint8_t k_{};
+    uint8_t k_;
 
     IndexStructure() = default;
 
@@ -55,7 +52,7 @@ public:
                  seqan3::bin_size{bin_size_},
                  seqan3::hash_function_count{hash_count_}}
     {
-        static_assert(data_layout_mode == seqan3::data_layout::uncompressed);
+        //static_assert(data_layout_mode == seqan3::data_layout::uncompressed);
     }
 
     uint8_t getBinCount()
@@ -73,6 +70,11 @@ public:
         return hash_count_;
     }
 
+   seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> getIBF()
+   {
+    return ibf_;
+   } 
+
     void emplace(uint64_t val, uint8_t idx)
     {
         ibf_.emplace(val, seqan3::bin_index{idx});
@@ -83,7 +85,6 @@ public:
     {
         archive(bin_count_, bin_size_, hash_count_, k_);
     }
-
 };
 
 template <class IndexStructure>
@@ -104,4 +105,4 @@ void load_ibf(IndexStructure & ibf, std::filesystem::path ipath)
 
 uint8_t parse_reference(std::filesystem::path &ref_file, record_list &refs);
 
-IndexStructure<> create_index(record_list &refs, uint8_t &bin_count, index_arguments args);
+IndexStructure create_index(record_list &refs, uint8_t &bin_count, index_arguments args);

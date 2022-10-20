@@ -19,7 +19,7 @@ uint8_t parse_reference(std::filesystem::path &ref_file, record_list &refs)
 }
 
 
-IndexStructure<> create_index(record_list &refs, uint8_t &bin_count, index_arguments args)
+IndexStructure create_index(record_list &refs, uint8_t &bin_count, index_arguments args)
 {
     uint8_t k = args.k;
     IndexStructure ibf(k, bin_count, args.bin_size, args.hash_count);
