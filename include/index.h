@@ -55,17 +55,17 @@ public:
         //static_assert(data_layout_mode == seqan3::data_layout::uncompressed);
     }
 
-    uint8_t getBinCount()
+    uint8_t getBinCount() const
     {
         return bin_count_;
     }
 
-    uint32_t getBinSize()
+    uint32_t getBinSize() const
     {
         return bin_size_;
     }
 
-    uint8_t getHashCount()
+    uint8_t getHashCount() const
     {
         return hash_count_;
     }
