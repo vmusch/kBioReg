@@ -46,22 +46,4 @@ void matrixTotxt(const std::vector<std::vector<std::string>>& matrix, std::strin
 void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
                 const std::vector<char>& alphabet);
 
-
-template <class IBFType>
-void store_ibf(IBFType const & ibf, std::filesystem::path opath)
-{
-    std::ofstream os{opath, std::ios::binary};
-    cereal::BinaryOutputArchive oarchive{os};
-    oarchive(seqan3::interleaved_bloom_filter(ibf));
-}
-
-
-template <class IBFType>
-void load_ibf(IBFType & ibf, std::filesystem::path ipath)
-{
-    std::ifstream is{ipath, std::ios::binary};
-    cereal::BinaryInputArchive iarchive{is};
-    iarchive(ibf);
-}
-
 #endif
