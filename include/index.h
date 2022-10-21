@@ -44,13 +44,13 @@ public:
                             uint8_t bc,
                             uint32_t bs,
                             uint8_t hc) :
-            k_{k},
             bin_count_{bc},
             bin_size_{bs},
             hash_count_{hc},
             ibf_{seqan3::bin_count{bin_count_},
                  seqan3::bin_size{bin_size_},
-                 seqan3::hash_function_count{hash_count_}}
+                 seqan3::hash_function_count{hash_count_}},
+            k_{k}
     {
         //static_assert(data_layout_mode == seqan3::data_layout::uncompressed);
     }
