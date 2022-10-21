@@ -37,20 +37,23 @@ private:
 public:
 
     uint8_t k_;
+    std::string molecule_;
 
     IndexStructure() = default;
 
     explicit IndexStructure(uint8_t k,
                             uint8_t bc,
                             uint32_t bs,
-                            uint8_t hc) :
+                            uint8_t hc,
+                            std::string molecule) :
             bin_count_{bc},
             bin_size_{bs},
             hash_count_{hc},
             ibf_{seqan3::bin_count{bin_count_},
                  seqan3::bin_size{bin_size_},
                  seqan3::hash_function_count{hash_count_}},
-            k_{k}
+            k_{k},
+            molecule_{molecule}
     {
         //static_assert(data_layout_mode == seqan3::data_layout::uncompressed);
     }
@@ -104,5 +107,4 @@ void load_ibf(IndexStructure & ibf, std::filesystem::path ipath)
 }
 
 uint8_t parse_reference(std::filesystem::path &ref_file, record_list &refs);
-
 IndexStructure create_index(record_list &refs, uint8_t &bin_count, index_arguments args);

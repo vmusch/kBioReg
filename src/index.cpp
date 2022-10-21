@@ -22,7 +22,7 @@ uint8_t parse_reference(std::filesystem::path &ref_file, record_list &refs)
 IndexStructure create_index(record_list &refs, uint8_t &bin_count, index_arguments args)
 {
     uint8_t k = args.k;
-    IndexStructure ibf(k, bin_count, args.bin_size, args.hash_count);
+    IndexStructure ibf(k, bin_count, args.bin_size, args.hash_count, args.molecule);
 
     auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{k});
     for (uint8_t i = 0; i < bin_count; i++)
