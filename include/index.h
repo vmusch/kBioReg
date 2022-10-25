@@ -29,7 +29,7 @@ class IndexStructure
 {
 
 private:
-    uint8_t bin_count_;
+    uint32_t bin_count_;
     uint32_t bin_size_{};
     uint8_t hash_count_{};
     seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> ibf_;
@@ -42,7 +42,7 @@ public:
     IndexStructure() = default;
 
     explicit IndexStructure(uint8_t k,
-                            uint8_t bc,
+                            uint32_t bc,
                             uint32_t bs,
                             uint8_t hc,
                             std::string molecule) :
@@ -58,7 +58,7 @@ public:
         //static_assert(data_layout_mode == seqan3::data_layout::uncompressed);
     }
 
-    uint8_t getBinCount() const
+    auto getBinCount() const
     {
         return bin_count_;
     }
@@ -106,5 +106,46 @@ void load_ibf(IndexStructure & ibf, std::filesystem::path ipath)
     iarchive(ibf);
 }
 
-uint8_t parse_reference(std::filesystem::path &ref_file, record_list &refs);
-IndexStructure create_index(record_list &refs, uint8_t &bin_count, index_arguments args);
+template <typename MolType>
+uint32_t parse_reference_na(std::filesystem::path &ref_file, record_list<MolType> &refs)
+{
+    uint32_t bin_count = 0;
+    seqan3::sequence_file_input fin{ref_file};
+    record_pair<MolType> record_desc;
+    for(auto & record: fin) {
+        bin_count++;
+        record_desc = std::make_pair(record.id(), record.sequence());
+        refs.push_back(record_desc);
+    }
+    return bin_count;
+}
+
+template <typename MolType>
+uint32_t parse_reference_aa(std::filesystem::path &ref_file, record_list<MolType> &refs)
+{
+    uint32_t bin_count = 0;
+    using traits_type = seqan3::sequence_file_input_default_traits_aa;
+    seqan3::sequence_file_input<traits_type> fin{ref_file};
+    record_pair<MolType> record_desc;
+    for(auto & record: fin) {
+        bin_count++;
+        record_desc = std::make_pair(record.id(), record.sequence());
+        refs.push_back(record_desc);
+    }
+    return bin_count;
+}
+
+template <typename MolType>
+IndexStructure create_index(record_list<MolType> &refs, uint32_t &bin_count, index_arguments args)
+{
+    uint8_t k = args.k;
+    IndexStructure ibf(k, bin_count, args.bin_size, args.hash_count, args.molecule);
+
+    auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{k});
+    for (size_t i = 0; i < bin_count; i++)
+        for (auto && value : refs[i].second | hash_adaptor)
+        {
+            ibf.emplace(value, i);
+        }
+    return ibf;
+}

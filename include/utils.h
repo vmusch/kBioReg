@@ -23,8 +23,8 @@
 
 
 // Types
-using record_pair = typename std::pair<std::string, seqan3::dna5_vector>;
-using record_list = typename std::vector<record_pair>;
+template <typename MoleculeType> using record_pair = std::pair<std::string, MoleculeType>;
+template <typename MoleculeType> using record_list = std::vector<record_pair<MoleculeType>>;
 
 
 std::vector<char> getAlphabet(const std::string& regex);
