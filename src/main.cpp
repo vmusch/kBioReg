@@ -6,6 +6,8 @@
 #include "nfa_pointer.h"
 #include "query.h"
 #include <fstream>
+#include <omp.h>
+#include <stdlib.h>
 
 
 void run_index(seqan3::argument_parser &parser)
@@ -160,12 +162,83 @@ void run_wordFile(seqan3::argument_parser &parser)
     seqan3::debug_stream << "DONE" << std::endl;
 }
 
+void run_benchmark(seqan3::argument_parser &parser)
+{
+    benchmark_arguments cmd_args{};
+    initialise_benchmark_parser(parser, cmd_args);
+    try
+    {
+        parser.parse(); // trigger command line parsing
+    }
+    catch (seqan3::argument_parser_error const & ext) // catch user errors
+    {
+        seqan3::debug_stream << "[Error] " << ext.what() << "\n"; // customise your error message
+        return ;
+    }
+    seqan3::debug_stream << "=======Start Benchmark========" << std::endl;
+    // double t1, t2;
+    // t1 = omp_get_wtime();
+    seqan3::debug_stream << "=======Make Genome========" << std::endl;
+    
+    seqan3::debug_stream << "Querying:" << std::endl;
+    uint8_t qlength = cmd_args.k;   
+    uint8_t number = cmd_args.w; //number of words
+    std::string query = cmd_args.query; //regex
+    std::string bashC ="../bash_scripts/simulate.sh ";
+    bashC += cmd_args.p;
+    
+    // Postfix to Thompson NFA
+    seqan3::debug_stream << "   - Constructing Thompson NFA from RegEx... ";
+    State* nfa = post2nfaE(query);
+    seqan3::debug_stream << "DONE" << std::endl;
+
+    // Make a file
+    seqan3::debug_stream << "   - Constructing words.txt ";
+    std::fstream file;
+    file.open(cmd_args.idx, std::ios::out);
+    seqan3::debug_stream << "DONE" << std::endl;
+
+    // write the file
+    seqan3::debug_stream << "   - write word.txt ";
+    while(number > 0)
+    {
+        std::string word = getRandomWord(nfa);
+        file << word <<"\n" ;   
+        number--;
+    }
+    file.close();
+    seqan3::debug_stream << "DONE" << std::endl;
+
+    // bash script
+    seqan3::debug_stream << "   - start script ";
+    system(bashC.c_str());
+    seqan3::debug_stream << "DONE" << std::endl;
+    seqan3::debug_stream << "=======Genome Done========" << std::endl;
+    
+    seqan3::debug_stream << "=======start search========" << std::endl;
+
+    seqan3::argument_parser indexparser = {};
+    seqan3::argument_parser query parser = {};
+    //indexing
+    run_index();
+    //querry
+    run_query();
+    //regexsearch c++
+
+    //time + rate
+
+    //only regex search c++
+
+    //time rate
+    //t2 = omp_get_wtime();
+    //seqan3::debug_stream<<"Time: "<< t2-t1 << std::endl;
+}
 
 int main(int argc, char *argv[])
 {
     seqan3::argument_parser top_level_parser{"kbioreg", argc, argv,
                                              seqan3::update_notifications::off,
-                                             {"index", "query", "words"}};
+                                             {"index", "query", "words", "benchmark"}};
     top_level_parser.info.description.push_back("Index a NA|AA FASTA library or search a regular expression.");
     try
     {
@@ -184,6 +257,8 @@ int main(int argc, char *argv[])
         run_query(sub_parser);
     else if (sub_parser.info.app_name == std::string_view{"kbioreg-words"})
         run_wordFile(sub_parser);
+    else if (sub_parser.info.app_name == std::string_view{"kbioreg-benchmark"})
+        run_benchmark(sub_parser);
     else
         std::cout << "Unhandled subparser named " << sub_parser.info.app_name << '\n';
 

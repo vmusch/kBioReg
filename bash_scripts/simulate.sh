@@ -40,17 +40,23 @@ $BINARY_DIR/split_sequence --input $bin_dir/ref.fasta --length $bin_length --par
 rm $bin_dir/ref.fasta
 #add words to fasta file
 echo "add words"
-occ = 0
+
+occ=0
+all=0
 for i in $bin_dir/*.fa
 do
-    rand = $((1 + $RANDOM % 10))
-    if["$rand" -le 10 ] then
-        occ++
-        shuf -n 1 $OUT_DIR/words.txt >> $i
+    rand=$((1 + $RANDOM % 100))
+    if [ $rand -le $1 ]
+        then
+            occ=$((occ+1))
+            shuf -n 1 $OUT_DIR/words.txt >> $i
+            echo "$i," >> bins.txt
     fi
+    all=$((all+1))
 done
-echo "$occ"
-    
+echo "Occurence: $occ"
+echo "all: $all"
+echo "rate: $(($occ*100 / $all))"
 for read_length in $READ_LENGTHS
 do
     echo "Generating $READ_COUNT reads of length $read_length with $ERRORS errors"

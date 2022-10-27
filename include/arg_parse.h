@@ -26,6 +26,16 @@ struct query_arguments
     std::string query;
 };
 
+struct benchmark_arguments
+{
+    uint8_t k = 3;
+    uint8_t t = 1;
+    uint8_t w = 100;
+    std::string p = "20";
+    std::filesystem::path idx{};
+    std::string query;
+};
+    
 inline void initialise_index_parser(seqan3::argument_parser &parser, index_arguments &args)
 {
     parser.info.author = "Remy Schwab";
@@ -42,6 +52,18 @@ inline void initialise_query_parser(seqan3::argument_parser &parser, query_argum
     parser.info.version = "1.0.0";
     parser.add_option(args.k, 'k', "ksize", "size of kmers");
     parser.add_option(args.t, 't', "threads", "Number of threads");
+    parser.add_positional_option(args.idx, "Path to IBF acid index");
+    parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
+}
+
+inline void initialise_benchmark_parser(seqan3::argument_parser &parser, benchmark_arguments &args)
+{
+    parser.info.author = "Vincent Musch";
+    parser.info.version = "1.0.0";
+    parser.add_option(args.k, 'k', "ksize", "size of kmers");
+    parser.add_option(args.t, 't', "threads", "Number of threads");
+    parser.add_option(args.w, 'w', "words", "Numbers of words");
+    parser.add_option(args.p, 'p', "percent", "percent of hidden words in fake genome");
     parser.add_positional_option(args.idx, "Path to IBF acid index");
     parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
 }
