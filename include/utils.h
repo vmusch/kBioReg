@@ -15,6 +15,7 @@
 
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/alphabet/nucleotide/all.hpp>
+#include <seqan3/alphabet/aminoacid/aa27.hpp>
 #include <seqan3/io/sequence_file/all.hpp>
 #include <seqan3/search/views/kmer_hash.hpp>
 #include <seqan3/search/views/minimiser_hash.hpp>
@@ -22,8 +23,8 @@
 
 
 // Types
-using record_pair = typename std::pair<std::string, seqan3::dna5_vector>;
-using record_list = typename std::vector<record_pair>;
+template <typename MoleculeType> using record_pair = std::pair<std::string, MoleculeType>;
+template <typename MoleculeType> using record_list = std::vector<record_pair<MoleculeType>>;
 
 
 std::vector<char> getAlphabet(const std::string& regex);
