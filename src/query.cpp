@@ -9,14 +9,19 @@
 void query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint64_t>> &path)
 {
     seqan3::debug_stream << path << ":::";
-    auto agent = ibf.getIBF().membership_agent();
-    std::vector<uint32_t> counter;
-    counter.assign(ibf.getBinCount(), 0);
+    
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed>::membership_agent::binning_bitvector hit_vector{ibf.getBinCount()};
+    std::fill(hit_vector.begin(), hit_vector.end(), true);
+    
+    auto && ibf_ref = ibf.getIBF();
+    auto agent = ibf_ref.membership_agent();
+
     for (auto && kmer : path)
-        std::transform (counter.begin(), counter.end(),
-                        agent.bulk_contains(kmer.second).begin(),
-                        counter.begin(), std::plus<int>());
-    seqan3::debug_stream << counter << std::endl;
+    {
+        auto & result = agent.bulk_contains(kmer.second);
+        hit_vector.raw_data() &= result.raw_data();
+    }
+    seqan3::debug_stream << hit_vector << std::endl;
 }
 
 

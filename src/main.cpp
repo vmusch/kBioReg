@@ -72,7 +72,6 @@ void run_query(seqan3::argument_parser &parser)
     seqan3::debug_stream << "Reading Index from Disk... ";
     IndexStructure ibf;
     load_ibf(ibf, cmd_args.idx);
-    // seqan3::debug_stream << typeid(ibf).name() << std::endl;
     seqan3::debug_stream << "DONE" << std::endl;
 
     // Evaluate and search for Regular Expression
@@ -109,6 +108,7 @@ void run_query(seqan3::argument_parser &parser)
     // A vector to store kNFA paths as hashed constituent kmers eg one element would be. <78, 45, 83...> <--> AC, CG, GT
     auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{qlength});
     std::vector<std::vector<std::pair<std::string, uint64_t>>> paths_vector;
+
     for(auto i : matrix)
     {
         std::vector<std::pair<std::string, uint64_t>> hash_vector;
@@ -121,11 +121,13 @@ void run_query(seqan3::argument_parser &parser)
         }
         paths_vector.push_back(hash_vector);
     }
+
     for (auto path : paths_vector)
     {
-        seqan3::debug_stream << collapse_kmers(qlength, path) << ":::";
+        //seqan3::debug_stream << collapse_kmers(qlength, path) << ":::";
         query_ibf(ibf, path);
     }
+    
     seqan3::debug_stream << "DONE" << std::endl;
 }
 
