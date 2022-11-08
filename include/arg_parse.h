@@ -62,8 +62,6 @@ inline void initialise_benchmark_parser(seqan3::argument_parser &parser, benchma
     parser.info.version = "1.0.0";
     parser.add_option(args.k, 'k', "ksize", "size of kmers");
     parser.add_option(args.t, 't', "threads", "Number of threads");
-    parser.add_option(args.w, 'w', "words", "Numbers of words");
-    parser.add_option(args.p, 'p', "percent", "percent of hidden words in fake genome");
     parser.add_positional_option(args.idx, "Path to IBF acid index");
     parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
 }
