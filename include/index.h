@@ -158,3 +158,5 @@ IndexStructure create_index(record_list<MolType> &refs, uint32_t &bin_count, ind
         }
     return ibf;
 }
+
+void drive_index(const index_arguments &cmd_args);
