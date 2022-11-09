@@ -240,47 +240,6 @@ void run_query_no_parser(query_arguments cmd_args)
     }
     seqan3::debug_stream << "DONE" << std::endl;
 }
-/*
-void run_wordFile(seqan3::argument_parser &parser)
-{
-    query_arguments cmd_args{};
-    initialise_query_parser(parser, cmd_args);
-    try
-    {
-        parser.parse(); // trigger command line parsing
-    }
-    catch (seqan3::argument_parser_error const & ext) // catch user errors
-    {
-        seqan3::debug_stream << "[Error] " << ext.what() << "\n"; // customise your error message
-        return ;
-    }
-    
-    seqan3::debug_stream << "Querying:" << std::endl;
-    uint8_t number = cmd_args.k;
-    std::string query = cmd_args.query;
-
-    // Postfix to Thompson NFA
-    seqan3::debug_stream << "   - Constructing Thompson NFA from RegEx... ";
-    State* nfa = post2nfaE(query);
-    seqan3::debug_stream << "DONE" << std::endl;
-
-    // Make a file
-    seqan3::debug_stream << "   - Constructing words.txt ";
-    std::fstream file;
-    file.open(cmd_args.idx, std::ios::out);
-    seqan3::debug_stream << "DONE" << std::endl;
-
-    // write the file
-    seqan3::debug_stream << "   - write word.txt ";
-    while(number > 0)
-    {
-        std::string word = getRandomWord(nfa);
-        file << word <<"\n" ;   
-        number--;
-    }
-    file.close();
-    seqan3::debug_stream << "DONE" << std::endl;
-}*/
 
 void run_benchmark(seqan3::argument_parser &parser)
 {
@@ -395,8 +354,6 @@ int main(int argc, char *argv[])
         run_index(sub_parser);
     else if (sub_parser.info.app_name == std::string_view{"kbioreg-query"})
         run_query(sub_parser);
-    // else if (sub_parser.info.app_name == std::string_view{"kbioreg-words"})
-    //     run_wordFile(sub_parser);
     else if (sub_parser.info.app_name == std::string_view{"kbioreg-benchmark"})
         run_benchmark(sub_parser);
     else
