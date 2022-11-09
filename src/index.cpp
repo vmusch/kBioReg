@@ -6,10 +6,10 @@
 
 void drive_index(const index_arguments &cmd_args)
 {
+    std::filesystem::path acid_lib = cmd_args.acid_lib;
     if(cmd_args.molecule == "na")
     {
         record_list<seqan3::dna5_vector> records;
-        std::filesystem::path acid_lib = cmd_args.acid_lib;
         uint32_t bin_count = parse_reference_na(acid_lib, records);
         
         seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
@@ -23,7 +23,6 @@ void drive_index(const index_arguments &cmd_args)
     } else
     {
         record_list<seqan3::aa27_vector> records;
-        std::filesystem::path acid_lib = cmd_args.acid_lib;
         uint32_t bin_count = parse_reference_aa(acid_lib, records);
         
         seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
