@@ -29,12 +29,17 @@ struct query_arguments
 
 struct benchmark_arguments
 {
-    uint8_t k = 3;
-    uint8_t t = 1;
-    uint8_t w = 100;
-    std::string p = "20";
-    std::filesystem::path idx{};
-    std::string query;
+    uint8_t k = 3; //all
+    uint8_t t = 1; //all
+    uint8_t w = 100; //script
+    std::string p = "20"; //script
+    std::string query; //query & script
+    std::filesystem::path idx{}; //query 
+    std::string ofile = "benchmark_idx"; //index
+    //std::filesystem::path acid_lib{}; //index
+    uint32_t bin_size = 8192; //index
+    uint8_t hash_count = 2; //index
+    std::string molecule; //index
 };
     
 inline void initialise_index_parser(seqan3::argument_parser &parser, index_arguments &args)
@@ -65,7 +70,14 @@ inline void initialise_benchmark_parser(seqan3::argument_parser &parser, benchma
     parser.info.version = "1.0.0";
     parser.add_option(args.k, 'k', "ksize", "size of kmers");
     parser.add_option(args.t, 't', "threads", "Number of threads");
-    parser.add_positional_option(args.idx, "Path to IBF acid index");
+    parser.add_option(args.w, 'w', "words", "Number of all random words vor the fake genome");
+    parser.add_option(args.p, 'p', "percent", "perzent of hidden words in fake genome");
+    parser.add_option(args.molecule, 'm', "molecule", "Molecule type of library", seqan3::option_spec::required,
+                                seqan3::value_list_validator{"na", "aa"});
+    parser.add_option(args.ofile, 'o', "ofile", "Name of index on disk");
+    //parser.add_positional_option(args.acid_lib, "Nucleic or Amino Acid library to indexed",
+    //                            seqan3::input_file_validator{{"fq","fastq","fa","fasta", "fna"}});
+    //parser.add_positional_option(args.idx, "Path to IBF acid index");
     parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
 }
 
