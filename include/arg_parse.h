@@ -34,9 +34,9 @@ struct benchmark_arguments
     uint8_t w = 100; //script
     std::string p = "20"; //script
     std::string query; //query & script
-    std::filesystem::path idx{}; //query 
+    std::filesystem::path idx = "benchmark_idx.ibf"; //query 
     std::string ofile = "benchmark_idx"; //index
-    //std::filesystem::path acid_lib{}; //index
+    std::filesystem::path acid_lib= "64/bins/all_bins.fa"; //index
     uint32_t bin_size = 8192; //index
     uint8_t hash_count = 2; //index
     std::string molecule; //index

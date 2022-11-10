@@ -40,7 +40,7 @@ $BINARY_DIR/split_sequence --input $bin_dir/ref.fasta --length $bin_length --par
 rm $bin_dir/ref.fasta
 #add words to fasta file
 echo "add words"
-
+> bins.txt
 occ=0
 all=0
 for i in $bin_dir/*.fa
@@ -57,6 +57,9 @@ done
 echo "Occurence: $occ"
 echo "all: $all"
 echo "rate: $(($occ*100 / $all))"
+
+cat $bin_dir/*.fa >> $bin_dir/all_bins.fa
+<< not_necessery
 for read_length in $READ_LENGTHS
 do
     echo "Generating $READ_COUNT reads of length $read_length with $ERRORS errors"
@@ -76,3 +79,4 @@ do
     mv $read_dir/all $read_dir/all.fastq
     for i in $(seq 0 9); do cat $read_dir/all.fastq >> $read_dir/all_10.fastq; done
 done
+not_necessery
