@@ -1,5 +1,4 @@
-#ifndef UTILS_H
-#define UTILS_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -46,5 +45,3 @@ void matrixTotxt(const std::vector<std::vector<std::string>>& matrix, std::strin
 
 void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
                 const std::vector<char>& alphabet);
-
-#endif

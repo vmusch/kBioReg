@@ -60,25 +60,34 @@ public:
 
     auto getBinCount() const
     {
+        assert(ibf_.bin_count() == bin_count_);
         return bin_count_;
     }
 
     uint32_t getBinSize() const
     {
+        assert(ibf_.bin_size() == bin_size_);
         return bin_size_;
     }
 
     uint8_t getHashCount() const
     {
+        assert(ibf_.hash_function_count() == hash_count_);
         return hash_count_;
     }
 
-   seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> getIBF()
-   {
-    return ibf_;
-   } 
+    // auto makeAgent()
+    // {
+    //     auto agent = ibf_.membership_agent();
+    //     return agent;
+    // }
 
-    void emplace(uint64_t val, uint8_t idx)
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed> getIBF()
+    {
+        return ibf_;
+    }
+
+    void emplace(uint64_t val, uint32_t idx)
     {
         ibf_.emplace(val, seqan3::bin_index{idx});
     }
@@ -86,7 +95,7 @@ public:
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive(bin_count_, bin_size_, hash_count_, k_);
+        archive(bin_count_, bin_size_, hash_count_, ibf_, k_, molecule_);
     }
 };
 
@@ -149,3 +158,5 @@ IndexStructure create_index(record_list<MolType> &refs, uint32_t &bin_count, ind
         }
     return ibf;
 }
+
+void drive_index(const index_arguments &cmd_args);
