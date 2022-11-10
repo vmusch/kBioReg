@@ -57,7 +57,7 @@ done
 echo "Occurence: $occ"
 echo "all: $all"
 echo "rate: $(($occ*100 / $all))"
-
+> $bin_dir/all_bins.fa
 cat $bin_dir/*.fa >> $bin_dir/all_bins.fa
 << not_necessery
 for read_length in $READ_LENGTHS
