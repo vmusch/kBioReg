@@ -9,9 +9,10 @@
 
 set -Eeuxo pipefail
 
-BINARY_DIR="/home/vincent/Desktop/kBioReg/data/bin" # Dir containing "mason_genome", "split_sequence", etc.
-OUT_DIR="/home/vincent/Desktop/kBioReg/build" # Where simulated data should be stored
-LENGTH=419430400 # 4*2^30 =  4GiB
+BINARY_DIR="/home/schwab/repos/Vincent/kBioReg/data/bin/" # Dir containing "mason_genome", "split_sequence", etc.
+OUT_DIR="/home/schwab/repos/Vincent/kBioReg/build/" # Where simulated data should be stored
+#LENGTH=419430400 # 4*2^30 =  4GiB
+LENGTH=10000 # 4*2^30 =  4GiB
 SEED=42 # was 20181406 before, but was hardcoded to 42 in seqan
 BIN_NUMBER=64
 ERRORS=2
@@ -49,8 +50,9 @@ do
     if [ $rand -le $1 ]
         then
             occ=$((occ+1))
-            shuf -n 1 $OUT_DIR/words.txt >> $i
-            echo "$i," >> bins.txt
+            HITWORD=$(shuf -n 1 $OUT_DIR/words.txt)
+            echo $HITWORD >> $i
+            echo "$i,$HITWORD" >> bins.txt
     fi
     all=$((all+1))
 done
@@ -59,24 +61,3 @@ echo "all: $all"
 echo "rate: $(($occ*100 / $all))"
 > $bin_dir/all_bins.fa
 cat $bin_dir/*.fa >> $bin_dir/all_bins.fa
-<< not_necessery
-for read_length in $READ_LENGTHS
-do
-    echo "Generating $READ_COUNT reads of length $read_length with $ERRORS errors"
-    read_dir=$output_dir/reads_e$ERRORS\_$read_length
-    mkdir -p $read_dir
-    list_file=$read_dir/all_bins.txt
-    seq -f "$output_dir/bins/bin_%0${#BIN_NUMBER}.0f.fa" 0 1 $((BIN_NUMBER-1)) > $list_file     #.
-    $BINARY_DIR/generate_reads \
-        --output $read_dir \
-        --max_errors $ERRORS \
-        --number_of_reads $READ_COUNT \
-        --read_length $read_length \
-        --number_of_haplotypes $HAPLOTYPE_COUNT \
-        $list_file > /dev/null
-    rm $list_file
-    find $read_dir -type f -name "*.fastq" -print0 | sort -zV | xargs -0 cat > $read_dir/all
-    mv $read_dir/all $read_dir/all.fastq
-    for i in $(seq 0 9); do cat $read_dir/all.fastq >> $read_dir/all_10.fastq; done
-done
-not_necessery
