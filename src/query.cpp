@@ -8,7 +8,8 @@
 
 void query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint64_t>> &path)
 {
-    seqan3::debug_stream << path << ":::";
+    // seqan3::debug_stream << path << ":::";
+    // seqan3::debug_stream << path << std::endl;
     
     seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed>::membership_agent::binning_bitvector hit_vector{ibf.getBinCount()};
     std::fill(hit_vector.begin(), hit_vector.end(), true);
@@ -19,9 +20,10 @@ void query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint64_t>
     for (auto && kmer : path)
     {
         auto & result = agent.bulk_contains(kmer.second);
+        seqan3::debug_stream << kmer.first << "\t" << result << std::endl;
         hit_vector.raw_data() &= result.raw_data();
     }
-    seqan3::debug_stream << hit_vector << std::endl;
+    seqan3::debug_stream << "FINAL RESULT: " << hit_vector << std::endl;
 }
 
 void drive_query(const query_arguments &cmd_args)

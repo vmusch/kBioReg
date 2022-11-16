@@ -15,8 +15,8 @@ struct index_arguments
     uint8_t t = 1;
     std::string ofile;
     std::filesystem::path acid_lib{};
-    uint32_t bin_size = 8192;
-    uint8_t hash_count = 2;
+    uint32_t bin_size = 10000;
+    uint8_t hash_count = 3;
     std::string molecule;
 };
 
@@ -32,6 +32,8 @@ inline void initialise_index_parser(seqan3::argument_parser &parser, index_argum
     parser.info.author = "Remy Schwab";
     parser.info.version = "1.0.0";
     parser.add_option(args.k, 'k', "ksize", "size of kmers");
+    parser.add_option(args.bin_size, 's', "bin_size", "Size of bins");
+    parser.add_option(args.hash_count, 'c', "hash_count", "Number of hash functions. NOTE: MORE THAN 4 IS SLOW");
     parser.add_option(args.t, 't', "threads", "Number of threads");
     parser.add_option(args.molecule, 'm', "molecule", "Molecule type of library", seqan3::option_spec::required,
                                 seqan3::value_list_validator{"na", "aa"});
