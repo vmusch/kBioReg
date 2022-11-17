@@ -25,6 +25,7 @@ struct query_arguments
     uint8_t t = 1;
     std::filesystem::path idx{};
     std::string query;
+    std::filesystem::path graph = "graph";
 };
 
 struct benchmark_arguments
@@ -40,6 +41,7 @@ struct benchmark_arguments
     uint32_t bin_size = 8192; //index
     uint8_t hash_count = 2; //index
     std::string molecule; //index
+    std::filesystem::path graph = "graph";
 };
     
 inline void initialise_index_parser(seqan3::argument_parser &parser, index_arguments &args)
@@ -62,6 +64,7 @@ inline void initialise_query_parser(seqan3::argument_parser &parser, query_argum
     parser.add_option(args.t, 't', "threads", "Number of threads");
     parser.add_positional_option(args.idx, "Path to IBF acid index");
     parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
+    parser.add_positional_option(args.graph, "path for .fot file of the automaton");
 }
 
 inline void initialise_benchmark_parser(seqan3::argument_parser &parser, benchmark_arguments &args)
@@ -79,6 +82,7 @@ inline void initialise_benchmark_parser(seqan3::argument_parser &parser, benchma
     //                            seqan3::input_file_validator{{"fq","fastq","fa","fasta", "fna"}});
     //parser.add_positional_option(args.idx, "Path to IBF acid index");
     parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
+    parser.add_positional_option(args.graph, "path for .fot file of the automaton");
 }
 
 #endif //KBIOREG_ARG_PARSE_H

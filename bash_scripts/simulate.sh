@@ -11,7 +11,7 @@ set -Eeuxo pipefail
 
 BINARY_DIR="/home/vincent/Desktop/kBioReg/data/bin" # Dir containing "mason_genome", "split_sequence", etc.
 OUT_DIR="/home/vincent/Desktop/kBioReg/build" # Where simulated data should be stored
-LENGTH=419430400 # 4*2^30 =  4GiB
+LENGTH=1000000  #419430400 # 4*2^30 =  4GiB
 SEED=42 # was 20181406 before, but was hardcoded to 42 in seqan
 BIN_NUMBER=64
 ERRORS=2
