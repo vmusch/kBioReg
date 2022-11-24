@@ -23,40 +23,6 @@ void run_index(seqan3::argument_parser &parser)
     drive_index(cmd_args);
 }
 
-
-// void run_index_no_parser(index_arguments &cmd_args)
-// {
-//     if(cmd_args.molecule == "na")
-//     {
-//         record_list<seqan3::dna5_vector> records;
-//         std::filesystem::path acid_lib = cmd_args.acid_lib;
-//         uint32_t bin_count = parse_reference_na(acid_lib, records);
-        
-//         seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
-//         IndexStructure ibf = create_index(records, bin_count, cmd_args);
-//         seqan3::debug_stream << "DONE" << std::endl;
-
-//         seqan3::debug_stream << "Writing to disk... ";
-//         std::filesystem::path output_path{cmd_args.ofile+".ibf"};
-//         store_ibf(ibf, output_path);
-//         seqan3::debug_stream << "DONE" << std::endl;
-//     } else
-//     {
-//         record_list<seqan3::aa27_vector> records;
-//         std::filesystem::path acid_lib = cmd_args.acid_lib;
-//         uint32_t bin_count = parse_reference_aa(acid_lib, records);
-        
-//         seqan3::debug_stream << "Indexing " << bin_count << " genomes... ";
-//         IndexStructure ibf = create_index(records, bin_count, cmd_args);
-//         seqan3::debug_stream << "DONE" << std::endl;
-
-//         seqan3::debug_stream << "Writing to disk... ";
-//         std::filesystem::path output_path{cmd_args.ofile+".ibf"};
-//         store_ibf(ibf, output_path);
-//         seqan3::debug_stream << "DONE" << std::endl;
-//     }
-// }
-
 void run_query(seqan3::argument_parser &parser)
 {
     // Parse Arguments
@@ -71,6 +37,7 @@ void run_query(seqan3::argument_parser &parser)
         seqan3::debug_stream << "[Error kBioReg Query module " << ext.what() << "\n";
         return;
     }
+    cmd_args.query = translate(cmd_args.regex);
     drive_query(cmd_args);
 }
 
@@ -87,6 +54,7 @@ void run_benchmark(seqan3::argument_parser &parser)
         seqan3::debug_stream << "[Error] " << ext.what() << "\n"; // customise your error message
         return ;
     }
+    cmd_args.query = translate(cmd_args.regex);
     seqan3::debug_stream << "=======Start Benchmark========" << std::endl;
     // double t1, t2;
     // t1 = omp_get_wtime();
@@ -99,7 +67,7 @@ void run_benchmark(seqan3::argument_parser &parser)
     bashC += cmd_args.p;
     
     // Postfix to Thompson NFA
-    seqan3::debug_stream << "   - Constructing Thompson NFA from RegEx... ";
+    seqan3::debug_stream <<"   - Constructing Thompson NFA from RegEx... ";
     State* nfa = post2nfaE(cmd_args.query);
     seqan3::debug_stream << "DONE" << std::endl;
 
@@ -113,7 +81,6 @@ void run_benchmark(seqan3::argument_parser &parser)
     seqan3::debug_stream << "   - write word.txt ";
     while(number > 0)
     {
-        
         std::string word = getRandomWord(nfa);
         file << word <<"\n" ;   
         number--;
@@ -140,6 +107,7 @@ void run_benchmark(seqan3::argument_parser &parser)
 
     query_arguments query{};
     query.idx = cmd_args.idx;
+    query.regex = cmd_args.regex;
     query.query = cmd_args.query;
     query.graph = cmd_args.graph;
 
@@ -149,21 +117,24 @@ void run_benchmark(seqan3::argument_parser &parser)
     seqan3::debug_stream << "=======Genome Done========" << std::endl;
     
     seqan3::debug_stream << "=======start search========" << std::endl;
-
+    double t1,t2;
     //seqan3::argument_parser query_parser = {};
     //indexing ./bin/kbioreg benchmark -k 4 -w 30 -p 10 words.txt "AC.G+.T."
+    t1 = omp_get_wtime();
     drive_index(index);
     //querry
     drive_query(query);
     //regexsearch c++
-
+    
+    t2 = omp_get_wtime();
     //time + rate
-
+    t1 = omp_get_wtime();
     //only regex search c++
-
-    //time rate
-    //t2 = omp_get_wtime();
-    //seqan3::debug_stream<<"Time: "<< t2-t1 << std::endl;
+    std::string str = cmd_args.regex;
+    std::regex reg(str);
+    matches(stream_as_string("64/bins/all_bins.fa"), reg, "benchmark.txt");
+    t2 = omp_get_wtime();
+    seqan3::debug_stream<<"Time: "<< t2-t1 << std::endl;
 }
 
 int main(int argc, char *argv[])

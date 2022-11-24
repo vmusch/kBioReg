@@ -86,6 +86,7 @@ void drive_query(const query_arguments &cmd_args)
         query_ibf(ibf, path);
     }
     
+
     seqan3::debug_stream << "DONE" << std::endl;
     seqan3::debug_stream << "Write .dot file" << std::endl;
     std::string dotfile = cmd_args.graph;

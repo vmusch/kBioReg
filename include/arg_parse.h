@@ -24,6 +24,7 @@ struct query_arguments
 {
     uint8_t t = 1;
     std::filesystem::path idx{};
+    std::string regex;
     std::string query;
     std::filesystem::path graph = "graph";
 };
@@ -34,7 +35,8 @@ struct benchmark_arguments
     uint8_t t = 1; //all
     uint8_t w = 100; //script
     std::string p = "20"; //script
-    std::string query; //query & script
+    std::string regex;
+    std::string query;
     std::filesystem::path idx = "benchmark_idx.ibf"; //query 
     std::string ofile = "benchmark_idx"; //index
     std::filesystem::path acid_lib= "64/bins/all_bins.fa"; //index
@@ -63,7 +65,7 @@ inline void initialise_query_parser(seqan3::argument_parser &parser, query_argum
     parser.info.version = "1.0.0";
     parser.add_option(args.t, 't', "threads", "Number of threads");
     parser.add_positional_option(args.idx, "Path to IBF acid index");
-    parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
+    parser.add_positional_option(args.regex, "Input Regex in reverse polish notation");
     parser.add_positional_option(args.graph, "path for .fot file of the automaton");
 }
 
@@ -81,7 +83,7 @@ inline void initialise_benchmark_parser(seqan3::argument_parser &parser, benchma
     //parser.add_positional_option(args.acid_lib, "Nucleic or Amino Acid library to indexed",
     //                            seqan3::input_file_validator{{"fq","fastq","fa","fasta", "fna"}});
     //parser.add_positional_option(args.idx, "Path to IBF acid index");
-    parser.add_positional_option(args.query, "Input Regex in reverse polish notation");
+    parser.add_positional_option(args.regex, "Input Regex in reverse polish notation");
     parser.add_positional_option(args.graph, "path for .fot file of the automaton");
 }
 
