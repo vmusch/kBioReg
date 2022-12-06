@@ -6,9 +6,9 @@
 
 
 
-void query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint64_t>> &path)
+bitvector query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint64_t>> &path)
 {
-    seqan3::debug_stream << path << ":::";
+    // seqan3::debug_stream << path << ":::";
     
     seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed>::membership_agent::binning_bitvector hit_vector{ibf.getBinCount()};
     std::fill(hit_vector.begin(), hit_vector.end(), true);
@@ -21,10 +21,12 @@ void query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint64_t>
         auto & result = agent.bulk_contains(kmer.second);
         hit_vector.raw_data() &= result.raw_data();
     }
-    seqan3::debug_stream << hit_vector << std::endl;
+    for(auto && bit: hit_vector) std::cout << bit;
+    std::cout<<std::endl;
+    return hit_vector;
 }
 
-void drive_query(const query_arguments &cmd_args)
+bitvector drive_query(const query_arguments &cmd_args)
 {
     // Load index from disk
     seqan3::debug_stream << "Reading Index from Disk... ";
@@ -80,12 +82,15 @@ void drive_query(const query_arguments &cmd_args)
         paths_vector.push_back(hash_vector);
     }
 
+    seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed>::membership_agent::binning_bitvector hit_vector{ibf.getBinCount()};
+    std::fill(hit_vector.begin(), hit_vector.end(), false);
+
     for (auto path : paths_vector)
     {
         //seqan3::debug_stream << collapse_kmers(qlength, path) << ":::";
-        query_ibf(ibf, path);
+        auto hits = query_ibf(ibf, path);
+        hit_vector.raw_data() |= hits.raw_data();
     }
-    
 
     seqan3::debug_stream << "DONE" << std::endl;
     seqan3::debug_stream << "Write .dot file" << std::endl;
@@ -93,6 +98,7 @@ void drive_query(const query_arguments &cmd_args)
     dotfile += ".dot";
     printGraph(knfa, dotfile);
     seqan3::debug_stream << "DONE" << std::endl;
+    return hit_vector;
 }
 
 

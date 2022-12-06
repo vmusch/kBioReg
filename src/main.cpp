@@ -54,13 +54,12 @@ void run_benchmark(seqan3::argument_parser &parser)
         seqan3::debug_stream << "[Error] " << ext.what() << "\n"; // customise your error message
         return ;
     }
+
     cmd_args.query = translate(cmd_args.regex);
+    // cmd_args.query = cmd_args.regex;
+
     seqan3::debug_stream << "=======Start Benchmark========" << std::endl;
-    // double t1, t2;
-    // t1 = omp_get_wtime();
     seqan3::debug_stream << "=======Make Genome========" << std::endl;
-    
-    seqan3::debug_stream << "Querying:" << std::endl; 
     uint8_t number = cmd_args.w; //number of words
     //std::string query = cmd_args.query; //regex
     std::string bashC ="../bash_scripts/simulate.sh ";
@@ -72,13 +71,9 @@ void run_benchmark(seqan3::argument_parser &parser)
     seqan3::debug_stream << "DONE" << std::endl;
 
     // Make a file
-    seqan3::debug_stream << "   - Constructing words.txt ";
+    seqan3::debug_stream << "   - Write words.txt ";
     std::fstream file;
     file.open("words.txt", std::ios::out);
-    seqan3::debug_stream << "DONE" << std::endl;
-
-    // write the file
-    seqan3::debug_stream << "   - write word.txt ";
     while(number > 0)
     {
         std::string word = getRandomWord(nfa);
@@ -122,19 +117,40 @@ void run_benchmark(seqan3::argument_parser &parser)
     //indexing ./bin/kbioreg benchmark -k 4 -w 30 -p 10 words.txt "AC.G+.T."
     t1 = omp_get_wtime();
     drive_index(index);
-    //querry
-    drive_query(query);
-    //regexsearch c++
-    
     t2 = omp_get_wtime();
-    //time + rate
+    seqan3::debug_stream << "[INDEXING TIME]: " << t2-t1 << std::endl;
+    //querry
     t1 = omp_get_wtime();
-    //only regex search c++
     std::string str = cmd_args.regex;
     std::regex reg(str);
-    matches(stream_as_string("64/bins/all_bins.fa"), reg, "benchmark.txt");
+    bitvector hits = drive_query(query);
+    for(size_t i = 0; i < 64; i++) // Bin Count hardcoded here
+    {
+        if(hits[i])
+        {
+            std::stringstream bin_file_stream;
+            std::string bin_file;
+            if(i < 10)
+            {
+                bin_file_stream << "bin_0"<<i<< ".fa";
+                bin_file = bin_file_stream.str();
+            } else
+            {
+                bin_file_stream << "bin_"<<i<< ".fa";
+                bin_file = bin_file_stream.str();
+            }
+            std::string filepath = "64/bins/"+bin_file;
+            matches(stream_as_string(filepath), reg, "kbioreg_search.txt");
+        }
+    }
     t2 = omp_get_wtime();
-    seqan3::debug_stream<<"Time: "<< t2-t1 << std::endl;
+    seqan3::debug_stream << "[KBIOREG QUERY TIME]: " << t2-t1 << std::endl;
+    
+    // Standard library RegEx Searc
+    t1 = omp_get_wtime();
+    matches(stream_as_string("64/bins/all_bins.fa"), reg, "standard_search.txt");
+    t2 = omp_get_wtime();
+    seqan3::debug_stream<<"[STDREGEX TIME]: "<< t2-t1 << std::endl;
 }
 
 int main(int argc, char *argv[])

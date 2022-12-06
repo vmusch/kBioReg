@@ -9,8 +9,8 @@
 
 set -Eeuxo pipefail
 
-BINARY_DIR="/home/vincent/Desktop/kBioReg/data/bin" # Dir containing "mason_genome", "split_sequence", etc.
-OUT_DIR="/home/vincent/Desktop/kBioReg/build" # Where simulated data should be stored
+BINARY_DIR="/home/schwab/repos/Vincent/kBioReg/data/bin" # Dir containing "mason_genome", "split_sequence", etc.
+OUT_DIR="/home/schwab/repos/Vincent/kBioReg/build" # Where simulated data should be stored
 LENGTH=419430400 # 4*2^30 =  4GiB
 SEED=42 # was 20181406 before, but was hardcoded to 42 in seqan
 BIN_NUMBER=64
@@ -28,18 +28,18 @@ mkdir -p $bin_dir
 mkdir -p $info_dir
 
 bin_length=$((LENGTH / BIN_NUMBER))
-echo "Simulating $BIN_NUMBER bins with reference length of $LENGTH and bin_length of $bin_length"
+echo "Simulating $BIN_NUMBER bins with reference length of $LENGTH and bin_length of $bin_length">&2
 
 # Simulate reference
-echo "Simulating genome"
+echo "Simulating genome">&2
 $BINARY_DIR/mason_genome -l $LENGTH -o $bin_dir/ref.fasta -s $SEED &>/dev/null
 # Evenly distribute it over bins
-echo "Splitting genome into bins"
+echo "Splitting genome into bins">&2
 $BINARY_DIR/split_sequence --input $bin_dir/ref.fasta --length $bin_length --parts $BIN_NUMBER
 # We do not need the reference anymore
 rm $bin_dir/ref.fasta
 #add words to fasta file
-echo "add words"
+echo "add words">&2
 > bins.txt
 occ=0
 all=0
@@ -55,8 +55,8 @@ do
     fi
     all=$((all+1))
 done
-echo "Occurence: $occ"
-echo "all: $all"
-echo "rate: $(($occ*100 / $all))"
-> $bin_dir/all_bins.fa
-cat $bin_dir/*.fa >> $bin_dir/all_bins.fa
+echo "Occurence: $occ">&2
+echo "all: $all">&2
+echo "rate: $(($occ*100 / $all))">&2
+cat $bin_dir/*.fa>$bin_dir/all_bins.fa
+# rm -r 64/ words.txt bins.txt hits.txt kbioreg_output.log benchmark_idx.ibf benchmark.txt
