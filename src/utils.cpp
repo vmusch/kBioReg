@@ -93,20 +93,20 @@ std::string stream_as_string(const std::string& path)
     return str;
 }
 
-void matches(const std::string& bin, std::regex reg, const std::string& writefile)
+int matches(const std::string& bin, std::regex reg, std::fstream& writefile)
 {
-    std::fstream file;
-    file.open(writefile, std::ios::out);
     std::string match;
     std::sregex_iterator currentMatch(bin.begin(), bin.end(), reg);
     std::sregex_iterator last_match;
+	int out = 0;
     while(currentMatch != last_match)
     {
         std::smatch match = *currentMatch;
-        file<<match.str()<<"   "<<match.position()<<"\n";
+        writefile<<match.str()<<"   "<<match.position()<<"\n";
         currentMatch++;
+		out++;
     }
-    file.close();
+    return out;
 }
 
 std::string translate(const std::string& str)

@@ -21,8 +21,8 @@ bitvector query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint
         auto & result = agent.bulk_contains(kmer.second);
         hit_vector.raw_data() &= result.raw_data();
     }
-    for(auto && bit: hit_vector) std::cout << bit;
-    std::cout<<std::endl;
+    //for(auto && bit: hit_vector) std::cout << bit;
+    //std::cout<<std::endl;
     return hit_vector;
 }
 

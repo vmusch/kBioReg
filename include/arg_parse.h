@@ -34,6 +34,8 @@ struct benchmark_arguments
     uint8_t k = 3; //all
     uint8_t t = 1; //all
     uint8_t w = 100; //script
+    std::string s = "400000"; //script
+    std::string b = "64"; //script
     std::string p = "20"; //script
     std::string regex;
     std::string query;
@@ -76,8 +78,10 @@ inline void initialise_benchmark_parser(seqan3::argument_parser &parser, benchma
     parser.add_option(args.k, 'k', "ksize", "size of kmers");
     parser.add_option(args.t, 't', "threads", "Number of threads");
     parser.add_option(args.w, 'w', "words", "Number of all random words vor the fake genome");
+    parser.add_option(args.s, 'j', "gsize", "size of the fake genome");
+    parser.add_option(args.b, 'b', "bin", "number of bins for the ibf");
     parser.add_option(args.p, 'p', "percent", "perzent of hidden words in fake genome");
-     parser.add_option(args.bin_size, 's', "bin_size", "Size of bins");
+    parser.add_option(args.bin_size, 's', "bin_size", "Size of bins");
     parser.add_option(args.hash_count, 'c', "hash_count", "Number of hash functions. NOTE: MORE THAN 4 IS SLOW");
     parser.add_option(args.molecule, 'm', "molecule", "Molecule type of library", seqan3::option_spec::required,
                                 seqan3::value_list_validator{"na", "aa"});

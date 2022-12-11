@@ -5,6 +5,7 @@
 #include <fstream>
 #include <omp.h>
 #include <stdlib.h>
+#include <algorithm>
 
 
 void run_index(seqan3::argument_parser &parser)
@@ -62,8 +63,7 @@ void run_benchmark(seqan3::argument_parser &parser)
     seqan3::debug_stream << "=======Make Genome========" << std::endl;
     uint8_t number = cmd_args.w; //number of words
     //std::string query = cmd_args.query; //regex
-    std::string bashC ="../bash_scripts/simulate.sh ";
-    bashC += cmd_args.p;
+    std::string bashC ="../bash_scripts/simulate.sh "+cmd_args.s+" "+cmd_args.b+" "+cmd_args.p;
     
     // Postfix to Thompson NFA
     seqan3::debug_stream <<"   - Constructing Thompson NFA from RegEx... ";
@@ -85,7 +85,7 @@ void run_benchmark(seqan3::argument_parser &parser)
 
     // bash script
     seqan3::debug_stream << "   - start script ";
-    system(bashC.c_str());
+    int occ = system(bashC.c_str());
     seqan3::debug_stream << "DONE" << std::endl;
 
     //write parser
@@ -120,11 +120,16 @@ void run_benchmark(seqan3::argument_parser &parser)
     t2 = omp_get_wtime();
     seqan3::debug_stream << "[INDEXING TIME]: " << t2-t1 << std::endl;
     //querry
-    t1 = omp_get_wtime();
+    int hitsNr = 0;
+    std::fstream file_kbioreg;
+    file_kbioreg.clear();
+    file_kbioreg.open("kbioreg_search.txt", std::ios::out);
     std::string str = cmd_args.regex;
     std::regex reg(str);
+    size_t bins = std::stoi(cmd_args.b);
+    t1 = omp_get_wtime();
     bitvector hits = drive_query(query);
-    for(size_t i = 0; i < 64; i++) // Bin Count hardcoded here
+    for(size_t i = 0; i < bins; i++) // Bin Count hardcoded here
     {
         if(hits[i])
         {
@@ -134,22 +139,40 @@ void run_benchmark(seqan3::argument_parser &parser)
             {
                 bin_file_stream << "bin_0"<<i<< ".fa";
                 bin_file = bin_file_stream.str();
-            } else
+            }
+             else
             {
                 bin_file_stream << "bin_"<<i<< ".fa";
                 bin_file = bin_file_stream.str();
             }
-            std::string filepath = "64/bins/"+bin_file;
-            matches(stream_as_string(filepath), reg, "kbioreg_search.txt");
+            std::string filepath = cmd_args.b+"/bins/"+bin_file;
+            hitsNr += matches(stream_as_string(filepath), reg, file_kbioreg);
         }
     }
+    
     t2 = omp_get_wtime();
     seqan3::debug_stream << "[KBIOREG QUERY TIME]: " << t2-t1 << std::endl;
+    file_kbioreg<<"[KBIOREG QUERY TIME]: " << t2-t1<<"\n";
+    file_kbioreg<<"[KBIOREG Genom Size]: " << cmd_args.s<<"\n";
+    file_kbioreg<<"[KBIOREG Bins]: " << cmd_args.b<<"\n";
+    file_kbioreg<<"[KBIOREG Occurence]: " << occ<<"\n";
+    file_kbioreg<<"[KBIOREG Hits]: " << hitsNr<<"\n";
+
+    file_kbioreg.close();
     
     // Standard library RegEx Searc
+    std::fstream file_std;
+    file_std.open("standard_search.txt", std::ios::out);
+    file_std.clear();
     t1 = omp_get_wtime();
-    matches(stream_as_string("64/bins/all_bins.fa"), reg, "standard_search.txt");
+    hitsNr = matches(stream_as_string(cmd_args.b+"/bins/all_bins.fa"), reg, file_std);
     t2 = omp_get_wtime();
+    file_std<<"[STDREGEX QUERY TIME]: " << t2-t1<<"\n";
+    file_std<<"[STDREGEX Genom Size]: " << cmd_args.s<<"\n";
+    file_std<<"[STDREGEX Bins]: " << cmd_args.b<<"\n";
+    file_std<<"[STDREGEX Occurence]: " << occ<<"\n";
+    file_std<<"[STDREGEX Hits]: " << hitsNr<<"\n";
+    file_std.close();
     seqan3::debug_stream<<"[STDREGEX TIME]: "<< t2-t1 << std::endl;
 }
 

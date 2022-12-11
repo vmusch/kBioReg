@@ -9,11 +9,11 @@
 
 set -Eeuxo pipefail
 
-BINARY_DIR="/home/schwab/repos/Vincent/kBioReg/data/bin" # Dir containing "mason_genome", "split_sequence", etc.
-OUT_DIR="/home/schwab/repos/Vincent/kBioReg/build" # Where simulated data should be stored
-LENGTH=419430400 # 4*2^30 =  4GiB
+BINARY_DIR="/home/vincent/Desktop//kBioReg/data/bin" # Dir containing "mason_genome", "split_sequence", etc.
+OUT_DIR="/home/vincent/Desktop//kBioReg/build" # Where simulated data should be stored
+LENGTH=$1 #419430400 # 4*2^30 =  4GiB
 SEED=42 # was 20181406 before, but was hardcoded to 42 in seqan
-BIN_NUMBER=64
+BIN_NUMBER=$2 #64
 ERRORS=2
 READ_LENGTHS="100 150 250"
 READ_COUNT=1048576
@@ -46,7 +46,7 @@ all=0
 for i in $bin_dir/*.fa
 do
     rand=$((1 + $RANDOM % 100))
-    if [ $rand -le $1 ]
+    if [ $rand -le $3 ]
         then
             occ=$((occ+1))
             HITWORD=$(shuf -n 1 $OUT_DIR/words.txt)
