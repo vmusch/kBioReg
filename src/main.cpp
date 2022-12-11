@@ -95,7 +95,7 @@ void run_benchmark(seqan3::argument_parser &parser)
     index.k = cmd_args.k;
     index.t = cmd_args.t;
     index.ofile = cmd_args.ofile;
-    index.acid_lib = cmd_args.acid_lib;
+    index.acid_lib = cmd_args.b + "/bins/all_bins.fa";
     index.molecule = cmd_args.molecule;
     index.bin_size = cmd_args.bin_size;
     index.hash_count = cmd_args.hash_count;
