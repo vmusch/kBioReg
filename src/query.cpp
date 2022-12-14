@@ -91,13 +91,14 @@ bitvector drive_query(const query_arguments &cmd_args)
         auto hits = query_ibf(ibf, path);
         hit_vector.raw_data() |= hits.raw_data();
     }
-
+    for(auto && bit: hit_vector) std::cout << bit;
+    std::cout<<std::endl;
     seqan3::debug_stream << "DONE" << std::endl;
-    seqan3::debug_stream << "Write .dot file" << std::endl;
-    std::string dotfile = cmd_args.graph;
-    dotfile += ".dot";
-    printGraph(knfa, dotfile);
-    seqan3::debug_stream << "DONE" << std::endl;
+    // seqan3::debug_stream << "Write .dot file" << std::endl;
+    // std::string dotfile = cmd_args.graph;
+    // dotfile += ".dot";
+    // printGraph(knfa, dotfile);
+    // seqan3::debug_stream << "DONE" << std::endl;
     return hit_vector;
 }
 

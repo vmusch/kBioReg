@@ -127,25 +127,43 @@ void run_benchmark(seqan3::argument_parser &parser)
     std::string str = cmd_args.regex;
     std::regex reg(str);
     size_t bins = std::stoi(cmd_args.b);
+    std::string binString = "bin_";
+    for(size_t i = 1; i < cmd_args.b.size(); i++)
+    {
+        binString = binString + "0";
+    }
     t1 = omp_get_wtime();
     bitvector hits = drive_query(query);
+    size_t j = 10;
     for(size_t i = 0; i < bins; i++) // Bin Count hardcoded here
     {
+        if(i >= j)
+        {
+            binString.pop_back();
+            j = j * 10;
+        } 
         if(hits[i])
         {
-            std::stringstream bin_file_stream;
-            std::string bin_file;
-            if(i < 10)
-            {
-                bin_file_stream << "bin_0"<<i<< ".fa";
-                bin_file = bin_file_stream.str();
-            }
-             else
-            {
-                bin_file_stream << "bin_"<<i<< ".fa";
-                bin_file = bin_file_stream.str();
-            }
-            std::string filepath = cmd_args.b+"/bins/"+bin_file;
+            // std::stringstream bin_file_stream;
+            // std::string bin_file;
+            // bin_file_stream << binString <<i<< ".fa";
+            // bin_file = bin_file_stream.str();
+            // if(i < 10)
+            // {
+            //     bin_file_stream << "bin_00"<<i<< ".fa";
+            //     bin_file = bin_file_stream.str();
+            // }
+            // else if(i < 100)
+            // {
+            //     bin_file_stream << "bin_0"<<i<< ".fa";
+            //     bin_file = bin_file_stream.str();
+            // }
+            //  else
+            // {
+            //     bin_file_stream << "bin_"<<i<< ".fa";
+            //     bin_file = bin_file_stream.str();
+            // }
+            std::string filepath = cmd_args.b+"/bins/"+binString+std::to_string(i)+".fa";
             hitsNr += matches(stream_as_string(filepath), reg, file_kbioreg);
         }
     }
