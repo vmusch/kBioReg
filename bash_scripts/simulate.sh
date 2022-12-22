@@ -39,24 +39,59 @@ $BINARY_DIR/split_sequence --input $bin_dir/ref.fasta --length $bin_length --par
 # We do not need the reference anymore
 rm $bin_dir/ref.fasta
 #add words to fasta file
+MAXCOUNT=99
+count=0
+num=$(($2-1))
+declare -a number=()
+while [ "$count" -le $MAXCOUNT ]; do
+    number[count]=$(($RANDOM % num ))
+    let "count += 1"
+done
+
+echo "${number[*]}"
+sorted=($(printf '%s\n' "${number[@]}"|sort -n))
+
+sorted[100]=$2
+
+echo "${sorted[*]}"
 echo "add words">&2
 > bins.txt
 occ=0
-all=0
+count=0
+index=0
 for i in $bin_dir/*.fa
 do
-    rand=$((1 + $RANDOM % 100))
-    if [ $rand -le $3 ]
-        then
+    #if [ $index -le 99 ]
+     #   then
+        while [ $count == ${sorted[$index]} ]; do
             occ=$((occ+1))
             HITWORD=$(shuf -n 1 $OUT_DIR/words.txt)
             echo $HITWORD >> $i
             echo "$i,$HITWORD" >> bins.txt
-    fi
-    all=$((all+1))
+            let "index += 1"
+        done
+    #fi
+    let "count += 1"
 done
+
+# echo "add words">&2
+# > bins.txt
+# occ=0
+# all=0
+# for i in $bin_dir/*.fa
+# do
+#     rand=$((1 + $RANDOM % 100))
+#     if [ $rand -le $3 ]
+#         then
+#             occ=$((occ+1))
+#             HITWORD=$(shuf -n 1 $OUT_DIR/words.txt)
+#             echo $HITWORD >> $i
+#             echo "$i,$HITWORD" >> bins.txt
+#     fi
+#     all=$((all+1))
+# done
 echo "Occurence: $occ">&2
-echo "all: $all">&2
-echo "rate: $(($occ*100 / $all))">&2
+echo "all: $count">&2
+echo "rate: $(($occ*100 / $count))">&2
 cat $bin_dir/*.fa>$bin_dir/all_bins.fa
 # rm -r 64/ words.txt bins.txt hits.txt kbioreg_output.log benchmark_idx.ibf benchmark.txt
