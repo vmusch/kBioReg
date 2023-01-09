@@ -19,6 +19,7 @@ bitvector query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint
     for (auto && kmer : path)
     {
         auto & result = agent.bulk_contains(kmer.second);
+        seqan3::debug_stream << kmer.first << "\t" << result << std::endl;
         hit_vector.raw_data() &= result.raw_data();
     }
     //for(auto && bit: hit_vector) std::cout << bit;
