@@ -11,6 +11,12 @@
 #include <stack>
 #include <vector>
 #include <filesystem>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <cstring>
+#include <regex>
 
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/alphabet/nucleotide/all.hpp>
@@ -25,6 +31,14 @@
 template <typename MoleculeType> using record_pair = std::pair<std::string, MoleculeType>;
 template <typename MoleculeType> using record_list = std::vector<record_pair<MoleculeType>>;
 
+
+char* re2post(char *re);
+
+std::string stream_as_string(const std::string& path);
+
+int matches(const std::string& bin, std::regex reg, std::fstream& writefile);
+
+std::string translate(const std::string& str);
 
 std::vector<char> getAlphabet(const std::string& regex);
 
