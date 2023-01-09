@@ -7,7 +7,7 @@
 # shipped with this file and also available at: https://github.com/seqan/raptor/blob/main/LICENSE.md
 # --------------------------------------------------------------------------------------------------
 
-set -Eeuxo pipefail
+set -Eeuo pipefail
 
 BINARY_DIR="/home/vincent/Desktop//kBioReg/data/bin" # Dir containing "mason_genome", "split_sequence", etc.
 OUT_DIR="/home/vincent/Desktop//kBioReg/build" # Where simulated data should be stored

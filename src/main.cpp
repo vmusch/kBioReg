@@ -155,25 +155,6 @@ void run_benchmark(seqan3::argument_parser &parser)
         } 
         if(hits[i])
         {
-            // std::stringstream bin_file_stream;
-            // std::string bin_file;
-            // bin_file_stream << binString <<i<< ".fa";
-            // bin_file = bin_file_stream.str();
-            // if(i < 10)
-            // {
-            //     bin_file_stream << "bin_00"<<i<< ".fa";
-            //     bin_file = bin_file_stream.str();
-            // }
-            // else if(i < 100)
-            // {
-            //     bin_file_stream << "bin_0"<<i<< ".fa";
-            //     bin_file = bin_file_stream.str();
-            // }
-            //  else
-            // {
-            //     bin_file_stream << "bin_"<<i<< ".fa";
-            //     bin_file = bin_file_stream.str();
-            // }
             std::string filepath = cmd_args.b+"/bins/"+binString+std::to_string(i)+".fa";
             hitsNr += matches(stream_as_string(filepath), reg, file_kbioreg);
         }
@@ -186,15 +167,14 @@ void run_benchmark(seqan3::argument_parser &parser)
     file_kbioreg<<"[KBIOREG Genom Size]: " << cmd_args.s<<"\n";
     file_kbioreg<<"[KBIOREG Bins]: " << cmd_args.b<<"\n";
     file_kbioreg<<"[KBIOREG Hits]: " << hitsNr<<"\n";
-    benchmark_table<< t4-t3<<",";   //time for loop
+    // benchmark_table<< t4-t3<<",";   //time for loop
     benchmark_table<< t4-t1<<",";   //timeGlobal
     benchmark_table<< cmd_args.s<<","; //genom size
     benchmark_table<< hitsNr<<",";    //hitsQ
     benchmark_table<< cmd_args.b<<",";    //bins
-
     file_kbioreg.close();
     
-    // Standard library RegEx Searc
+    //Standard library RegEx Search
     std::fstream file_std;
     file_std.open("standard_search.txt", std::ios::out);
     file_std.clear();

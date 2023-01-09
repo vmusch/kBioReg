@@ -159,12 +159,13 @@ bitvector drive_query_benchmark(const query_arguments &cmd_args, std::fstream &b
     // A vector to store kNFA paths as hashed constituent kmers eg one element would be. <78, 45, 83...> <--> AC, CG, GT
     auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{qlength});
     std::vector<std::vector<std::pair<std::string, uint64_t>>> paths_vector;
-
+    //size_t set = 0;
     for(auto i : matrix)
     {
         std::vector<std::pair<std::string, uint64_t>> hash_vector;
         for(auto j : i)
         {
+            //set++;
             std::vector<seqan3::dna5> acid_vec = convertStringToDNA(j);
             auto digest = acid_vec | hash_adaptor;
             // Create a vector of kmer hashes that correspond
@@ -172,21 +173,37 @@ bitvector drive_query_benchmark(const query_arguments &cmd_args, std::fstream &b
         }
         paths_vector.push_back(hash_vector);
     }
-
+    
+    benchmark_table<<matrix.size()<<",";
     seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed>::membership_agent::binning_bitvector hit_vector{ibf.getBinCount()};
     std::fill(hit_vector.begin(), hit_vector.end(), false);
 
+    int null,eins;
+    eins = 0;
     for (auto path : paths_vector)
     {
         //seqan3::debug_stream << collapse_kmers(qlength, path) << ":::";
         auto hits = query_ibf(ibf, path);
         hit_vector.raw_data() |= hits.raw_data();
     }
-    for(auto && bit: hit_vector) std::cout << bit;
+    for(auto && bit: hit_vector)
+    {
+      std::cout << bit;
+      eins+=bit;  
+    } 
+    null = 16384-eins;
     t2 = omp_get_wtime();
     benchmark_table<<t2-t1<<",";
+    //benchmark_table<<null<<","<<eins<<",";
+   
     std::cout<<std::endl;
     seqan3::debug_stream << "DONE in "<<t2-t1<<"sec." << std::endl;
+
+    seqan3::debug_stream << "Write .dot file" << std::endl;
+    std::string dotfile = "graph";
+    dotfile += ".dot";
+    printGraph(knfa, dotfile);
+    seqan3::debug_stream << "DONE" << std::endl;
     return hit_vector;
 }
 
