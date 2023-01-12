@@ -5,6 +5,9 @@
 #include <vector>
 #include <stack>
 #include "nfa_pointer.h"
+#include "robin_hood.h"
+#include "utils.h"
+#include "index.h"
 
 
 struct kState
@@ -48,6 +51,13 @@ void nextKeys(std::vector<keyState *>& liste, keyState* input, kState* match);
 
 std::vector<kState *> nfa2knfa(State* nfa_ptr, const int& q);
 
-void dfs(kState* input, std::vector<std::vector<std::string>>& matrix);
+void dfs(
+  kState* input, 
+  std::vector<std::vector<std::string>>& matrix, 
+  uint32_t &vector_idx, 
+  robin_hood::unordered_map<uint64_t, uint32_t> &hash_to_idx,
+  std::vector<bitvector> &kmer_bitvex,
+  IndexStructure &ibf
+);
 
 #endif
