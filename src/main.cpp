@@ -85,7 +85,7 @@ void run_benchmark(seqan3::argument_parser &parser)
 
     // bash script
     seqan3::debug_stream << "   - start script ";
-    int occ = system(bashC.c_str());
+    // int occ = system(bashC.c_str());
     seqan3::debug_stream << "DONE" << std::endl;
 
     //write parser

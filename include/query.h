@@ -13,9 +13,8 @@
 #include "nfa_pointer.h"
 
 
-using bitvector = seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed>::membership_agent::binning_bitvector;
-
-bitvector query_ibf(IndexStructure &ibf, std::vector<std::pair<std::string, uint64_t>> &path);
+bitvector query_ibf(uint32_t &bin_count, robin_hood::unordered_map<uint64_t, uint32_t> &hash_to_idx,
+  std::vector<bitvector> &kmer_bitvex, std::vector<std::pair<std::string, uint64_t>> &path);
 
 bitvector drive_query(const query_arguments & cmd_args);
 

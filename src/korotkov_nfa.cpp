@@ -280,10 +280,22 @@ Path* findPath(kState* position)
  * depht first search, generates the matrix with the possible paths
  */
 
-void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
+void dfs(
+          kState* input, std::vector<std::vector<std::string>>& matrix,
+          uint32_t &vector_idx, 
+          robin_hood::unordered_map<uint64_t,
+          uint32_t> &hash_to_idx,
+          std::vector<bitvector> &kmer_bitvex,
+          IndexStructure &ibf
+        )
 {
   std::vector<std::string> line{};
   std::stack<Path*> stack{};
+  
+  size_t qlength = input->qGram_.length();
+  auto hash_adaptor = seqan3::views::kmer_hash(seqan3::ungapped{qlength});
+  auto && ibf_ref = ibf.getIBF();
+  auto agent = ibf_ref.membership_agent();
 
   Path* p = findPath(input);
   stack.push(p);
@@ -294,6 +306,11 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
 
     if(p->position_->marked_ == 0)
     {
+      auto acid_vec = convertStringToDNA(p->position_->qGram_);
+      auto digest = acid_vec | hash_adaptor;
+      hash_to_idx[digest[0]] = vector_idx;
+      kmer_bitvex.push_back(agent.bulk_contains(digest[0]));
+      vector_idx++;
       line.push_back(p->position_->qGram_);
       p->position_->marked_ = 1;
     }
@@ -321,6 +338,7 @@ void dfs(kState* input, std::vector<std::vector<std::string>>& matrix)
       delete p;
     }
   }
+  // seqan3::debug_stream << hash_to_idx << std::endl;
 }
 
 // int main()

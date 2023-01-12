@@ -31,6 +31,7 @@
 template <typename MoleculeType> using record_pair = std::pair<std::string, MoleculeType>;
 template <typename MoleculeType> using record_list = std::vector<record_pair<MoleculeType>>;
 
+using bitvector = seqan3::interleaved_bloom_filter<seqan3::data_layout::uncompressed>::membership_agent::binning_bitvector;
 
 char* re2post(char *re);
 
