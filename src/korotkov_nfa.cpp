@@ -341,6 +341,63 @@ void dfs(
   // seqan3::debug_stream << hash_to_idx << std::endl;
 }
 
+int char2int(char in)
+{
+  int out = 3;
+  if(in == 'A')  
+  {
+    out = 0;
+  }
+  else if(in == 'C')
+  { 
+    out = 1;
+  }
+  else if(in == 'G')
+  {
+    out = 2;
+  } 
+  return out;
+}
+
+
+std::vector<std::vector<int>> BFS(const std::vector<kState *>& input)
+{
+  int nodes = 0;
+  int edges = 0;
+  std::vector<std::vector<int>> fp_m;
+  std::queue<std::pair<kState*,int>> q;
+  for(auto n : input){
+    q.push(std::make_pair(n,0));
+    n->marked_=2;
+  }
+  while(!q.empty())
+  {
+    auto x = q.front();
+    q.pop();
+
+    if(fp_m.size() <= x.second)
+    {
+      std::vector<int> occ={0,0,0,0};
+      fp_m.push_back(occ);
+    }
+    for(auto e : x.first->outs_)
+    {
+
+      edges += e->outs_.size();
+      if(e->marked_ != 2 && e->qGram_ != "$")
+      {
+        char a = e->qGram_.back();
+        fp_m[x.second][char2int(a)]=1;
+        int gen = x.second +1;
+        q.push(std::make_pair(e,gen));
+        e->marked_ =2;
+        nodes++;
+      }
+    }
+  }
+  std::cout<<nodes<<" "<<edges<<"\n";
+  return fp_m;
+}
 // int main()
 // {
 

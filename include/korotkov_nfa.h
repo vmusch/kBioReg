@@ -60,4 +60,6 @@ void dfs(
   IndexStructure &ibf
 );
 
+std::vector<std::vector<int>> BFS(const std::vector<kState *>& input);
+
 #endif
