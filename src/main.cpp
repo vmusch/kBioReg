@@ -85,7 +85,7 @@ void run_benchmark(seqan3::argument_parser &parser)
 
     // bash script
     seqan3::debug_stream << "   - start script ";
-    // int occ = system(bashC.c_str());
+    int occ = system(bashC.c_str());
     seqan3::debug_stream << "DONE" << std::endl;
 
     //write parser
@@ -192,6 +192,24 @@ void run_benchmark(seqan3::argument_parser &parser)
 
     benchmark_table.close();
     seqan3::debug_stream<<"[STDREGEX TIME]: "<< t2-t1 << std::endl;
+
+
+    //fp
+    std::vector<kState *> knfa_fp = nfa2knfa(nfa, cmd_args.k);
+    std::vector<std::vector<int>> fp = BFS(knfa_fp);
+
+    for(auto i : fp)
+    {
+        for(auto j : i)
+        {
+            std::cout<<j<<" ";
+        }
+        std::cout<<"\n";
+    }
+    double fp_ibf = 0.001;
+    int starts = knfa_fp.size();
+    double fp_rate = fpCalc(fp,fp_ibf,starts,cmd_args.k);
+    std::cout<<fp_rate<<"\n";
 }
 
 int main(int argc, char *argv[])

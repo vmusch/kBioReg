@@ -395,6 +395,7 @@ std::vector<std::vector<int>> BFS(const std::vector<kState *>& input)
       }
     }
   }
+  fp_m.pop_back();
   std::cout<<nodes<<" "<<edges<<"\n";
   return fp_m;
 }

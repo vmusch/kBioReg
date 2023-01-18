@@ -60,3 +60,5 @@ void matrixTotxt(const std::vector<std::vector<std::string>>& matrix, std::strin
 
 void matrixTXT(const std::vector<std::vector<std::string>>& matrix,
                 const std::vector<char>& alphabet);
+
+double fpCalc(const std::vector<std::vector<int>>& m, double& ibf_fp, const int& starts, const int& k);
