@@ -166,16 +166,15 @@ std::vector<seqan3::dna5> convertStringToDNA(std::string const &str)
 double fpCalc(const std::vector<std::vector<int>>& m, double& ibf_fp, const int& starts, const int& k)
 {
 	double fp = 1;
+	double x = 0.25+ibf_fp;
 	for(auto e : m)
 	{
-		int sum = 0;
+		double sum = 0;
 		for(auto i : e)
 		{
-			sum += i;
+			if(i == 1) sum+=x;
 		}
-		double p = sum/4;
-		p +=ibf_fp;
-		fp *= p;
+		fp *= sum;
 	}
 	fp *=(starts/pow(4,k));
 	return fp;
